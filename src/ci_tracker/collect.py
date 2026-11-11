@@ -21,6 +21,7 @@ from .config import COMPANIES, QUERY_TEMPLATES
 
 RSS_URL = "https://news.google.com/rss/search?q={q}&hl=en-IN&gl=IN&ceid=IN:en"
 GDELT_URL = "https://api.gdeltproject.org/api/v2/doc/doc"
+BING_RSS = "https://www.bing.com/news/search"
 EVENT_WORDS = re.compile(
     r"acqui|buy|stake|invest|partner|alliance|collaborat|tie-up|teams up|launch|unveil|"
     r"introduc|agentic|\bAI\b|GenAI|generative|deal|contract|wins|GCC|capability cent|"
@@ -79,6 +80,39 @@ def search_gdelt(company: str, days: int = 14, max_records: int = 40) -> list[Ar
     except ValueError:  # GDELT returns plain text on rate-limit or bad query
         return []
     return parse_gdelt(company, items)
+
+
+def search_bing(company: str) -> list[Article]:
+    """Bing News RSS. Its links carry the real publisher URL in a `url=` parameter."""
+    params = {"q": f'"{company}" AI', "format": "rss", "setlang": "en-gb"}
+    resp = requests.get(BING_RSS, params=params, headers=HEADERS, timeout=30)
+    resp.raise_for_status()
+    return parse_bing(company, resp.content)
+
+
+def parse_bing(company: str, xml_bytes: bytes) -> list[Article]:
+    seen, out = set(), []
+    for item in ET.fromstring(xml_bytes).iter("item"):
+        title = html.unescape(item.findtext("title", "")).strip()
+        link = item.findtext("link", "")
+        q = urllib.parse.parse_qs(urllib.parse.urlparse(link).query)
+        url = q.get("url", [link])[0]
+        key = re.sub(r"\W+", "", title.lower())[:80]
+        if not title or key in seen:
+            continue
+        seen.add(key)
+        pub = item.findtext("pubDate")
+        try:
+            published = parsedate_to_datetime(pub).date().isoformat() if pub else ""
+        except (TypeError, ValueError):
+            published = ""
+        source = ""
+        for child in item:
+            if child.tag.endswith("Source"):
+                source = (child.text or "").strip()
+        out.append(Article(company=company, title=title, url=url, published=published,
+                           source=source or urllib.parse.urlparse(url).netloc))
+    return out
 
 
 def parse_gdelt(company: str, items: list[dict]) -> list[Article]:
@@ -144,21 +178,25 @@ def collect_all(days: int = 14, per_query: int = 8, with_text: bool = True,
     skip_urls = skip_urls or set()
     articles = []
     for company in COMPANIES:
-        try:
-            found, source = search_gdelt(company, days=days), "GDELT"
-        except requests.RequestException:
-            found = []
-        if not found:
+        found, source = [], "none"
+        for name, fn in (("GDELT", lambda: search_gdelt(company, days=days)),
+                         ("Bing News", lambda: search_bing(company)),
+                         ("Google News", lambda: search_news(company, days=days, per_query=per_query))):
             try:
-                found, source = search_news(company, days=days, per_query=per_query), "Google News"
-            except requests.RequestException:
-                found, source = [], "none"
-        candidates = [a for a in found if looks_like_event(a) and a.url not in skip_urls]
+                found = [a for a in fn() if looks_like_event(a)]
+            except (requests.RequestException, ET.ParseError, ValueError):
+                found = []
+            if found:
+                source = name
+                break
+        candidates = [a for a in found if a.url not in skip_urls]
         picked = candidates[:max_per_company]
         if with_text:
             for a in picked:
                 a.text = fetch_text(a.url)
         articles.extend(picked)
-        print(f"  {company}: {len(found)} found via {source}, {len(picked)} event-like kept")
+        with_text_n = sum(1 for a in picked if a.text)
+        print(f"  {company}: {len(found)} event-like via {source}, {len(picked)} kept, "
+              f"{with_text_n} with article text", flush=True)
         time.sleep(6)  # GDELT asks for one request every 5 seconds
     return articles

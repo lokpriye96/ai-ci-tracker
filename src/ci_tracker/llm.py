@@ -107,16 +107,30 @@ def call_llm(prompt: str) -> dict:
         return _parse_json(r.json()["choices"][0]["message"]["content"])
 
     if provider == "github":
-        r = requests.post(
-            "https://models.github.ai/inference/chat/completions",
-            headers={"Authorization": f"Bearer {os.environ['GITHUB_TOKEN']}",
-                     "Content-Type": "application/json"},
-            json={"model": model, "temperature": 0,
-                  "messages": [{"role": "user", "content": prompt + "\n\nReturn only JSON."}]},
-            timeout=90,
-        )
+        import time
+        body = {"model": model, "temperature": 0,
+                "messages": [{"role": "system", "content": "You return only valid JSON."},
+                             {"role": "user", "content": prompt}]}
+        for attempt in range(4):
+            r = requests.post(
+                "https://models.github.ai/inference/chat/completions",
+                headers={"Authorization": f"Bearer {os.environ['GITHUB_TOKEN']}",
+                         "Content-Type": "application/json", "Accept": "application/json"},
+                json=body, timeout=120,
+            )
+            if r.status_code == 429 and attempt < 3:  # free-tier rate limit: back off and retry
+                time.sleep(int(r.headers.get("retry-after", "20")) + 2)
+                continue
+            break
         if r.status_code != 200:
             raise RuntimeError(f"GitHub Models HTTP {r.status_code}: {r.text[:300]}")
-        return _parse_json(r.json()["choices"][0]["message"]["content"])
+        try:
+            content = r.json()["choices"][0]["message"]["content"] or ""
+        except (ValueError, KeyError, IndexError) as exc:
+            raise RuntimeError(f"Unreadable GitHub Models response ({exc}): {r.text[:300]!r}")
+        try:
+            return _parse_json(content)
+        except ValueError as exc:
+            raise RuntimeError(f"Model reply was not JSON ({exc}): {content[:300]!r}")
 
     raise ValueError(f"Unknown CI_LLM_PROVIDER: {provider}")
