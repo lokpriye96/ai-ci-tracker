@@ -39,7 +39,7 @@ Full write-up: [`outputs/key_findings.md`](outputs/key_findings.md) · Battle ca
 
 ```mermaid
 flowchart LR
-    A[Collect<br/>Google News RSS or<br/>press-release URLs] --> B[Extract<br/>LLM to fixed JSON schema<br/>+ evidence quote]
+    A[Collect<br/>GDELT news API, Google News<br/>or press-release URLs] --> B[Extract<br/>LLM to fixed JSON schema<br/>+ evidence quote]
     B --> C{Validate<br/>rule checks}
     C -->|pass| D[(Competitor DB<br/>ci_events.csv)]
     C -->|soft fail| E[Human review queue]
@@ -72,6 +72,12 @@ The test suite feeds in a deliberately **hallucinated acquisition**. The validat
 | [`docs/index.html`](docs/index.html) | Interactive dashboard (filters, hover details, timeline, battle cards, evidence table) |
 | [`outputs/battle_cards.md`](outputs/battle_cards.md) | One card per competitor: positioning, AI assets, strengths, gaps, how to compete |
 
+## Runs automatically on GitHub
+
+The pipeline runs in **GitHub Actions** every Monday, and on demand from the Actions tab ("CI tracker refresh" → *Run workflow*).
+The LLM step uses **GitHub Models** with the repository's built-in token, so no API key is stored anywhere.
+Every run is recorded in [`outputs/run_log.md`](outputs/run_log.md): articles read, events extracted, verified, held for review and rejected, each with its source. New verified events flow into the database, Excel and dashboard automatically. Held events wait in `data/review_queue.csv` for analyst approval.
+
 ## Run it yourself
 
 ```bash
@@ -84,7 +90,7 @@ python run_pipeline.py --demo
 
 # 2. Real run: get a free Gemini API key at https://aistudio.google.com/apikey
 cp .env.example .env           # paste your key into .env
-python run_pipeline.py --days 7 --dry-run   # preview
+python run_pipeline.py --days 7 --dry-run   # preview (GDELT news + LLM)
 python run_pipeline.py --days 7             # append verified events
 
 # 3. Rebuild Excel, battle cards and dashboard from the database
@@ -94,7 +100,7 @@ python build_outputs.py
 pytest -q
 ```
 
-Switch LLM provider with `CI_LLM_PROVIDER=gemini | anthropic | openai` in `.env`. Model names change often, so set `CI_LLM_MODEL` if the default has been retired.
+Switch LLM provider with `CI_LLM_PROVIDER=gemini | anthropic | openai | github` in `.env`. Model names change often, so set `CI_LLM_MODEL` if the default has been retired.
 
 ## Project structure
 
@@ -105,7 +111,7 @@ ai-ci-tracker/
 ├── prompts/extract_event.md   # the extraction prompt (versioned like code)
 ├── src/ci_tracker/
 │   ├── config.py              # competitors, taxonomy, source rules
-│   ├── collect.py             # news RSS + article text
+│   ├── collect.py             # GDELT / Google News + article text
 │   ├── llm.py                 # Gemini / Claude / OpenAI adapters (plain REST)
 │   ├── extract.py             # article → structured events
 │   ├── validate.py            # guard-rails + de-duplication

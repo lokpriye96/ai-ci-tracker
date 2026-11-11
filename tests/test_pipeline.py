@@ -74,3 +74,23 @@ def test_seed_db_respects_taxonomy():
         assert r["strategic_theme"] in STRATEGIC_THEMES, r["event_id"]
         assert r["source_url"].startswith("https://"), r["event_id"]
     assert len({r["event_id"] for r in rows}) == len(rows)
+
+
+def test_gdelt_parsing_and_event_filter():
+    from ci_tracker.collect import looks_like_event, parse_gdelt
+    items = [
+        {"url": "https://example.com/a", "title": "Infosys partners with ExampleAI on agentic AI",
+         "seendate": "20261102T101500Z", "domain": "example.com"},
+        {"url": "https://example.com/b", "title": "Infosys partners with ExampleAI on agentic AI",
+         "seendate": "20261102T101500Z", "domain": "example.com"},  # duplicate headline
+        {"url": "https://example.com/c", "title": "Infosys share price today: stock closes flat",
+         "seendate": "20261103T080000Z", "domain": "example.com"},
+    ]
+    arts = parse_gdelt("Infosys", items)
+    assert len(arts) == 2 and arts[0].published == "2026-11-02"
+    assert [looks_like_event(a) for a in arts] == [True, False]
+
+
+def test_github_models_provider_is_registered():
+    from ci_tracker.llm import DEFAULT_MODELS
+    assert DEFAULT_MODELS["github"].startswith("openai/")

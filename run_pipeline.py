@@ -75,9 +75,38 @@ def next_id(company: str, existing: list[dict]) -> str:
     return f"{p}-{(max(nums) + 1 if nums else 1):03d}"
 
 
+def write_run_log(args, articles, raw, verified, review, rejected, dupes, llm_errors) -> None:
+    """Append a human-readable record of this run (public proof the pipeline runs)."""
+    import os
+    from datetime import datetime, timezone
+    provider = os.getenv("CI_LLM_PROVIDER", "gemini")
+    model = os.getenv("CI_LLM_MODEL", "") or "default"
+    stamp = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
+    lines = [f"\n## Run {stamp}" + (" (dry run)" if args.dry_run else ""),
+             f"- Trigger: {'GitHub Actions' if os.getenv('GITHUB_ACTIONS') else 'local'}"
+             + (f" · run {os.getenv('GITHUB_RUN_ID')}" if os.getenv('GITHUB_RUN_ID') else ""),
+             f"- LLM: {provider} / {model} · look-back {args.days} days",
+             f"- Articles sent to LLM: {len(articles)} · LLM errors: {llm_errors}",
+             f"- Candidate events: {len(raw)} → verified {len(verified)}, needs review {len(review)}, "
+             f"rejected {len(rejected)}, duplicates skipped {dupes}"]
+    for ev in verified + review:
+        lines.append(f"  - [{ev['validation_status']}] {ev['event_id']} {ev['company']}: "
+                     f"{ev['headline']} ({ev['source_url']})")
+    for ev in rejected:
+        lines.append(f"  - [Rejected] {ev.get('company', '?')}: {ev.get('headline', '')} - {ev['checks']}")
+    log = ROOT / "outputs" / "run_log.md"
+    if not log.exists():
+        log.write_text("# Pipeline run log\n\nEvery automated or manual run is recorded here.\n",
+                       encoding="utf-8")
+    with log.open("a", encoding="utf-8") as f:
+        f.write("\n".join(lines) + "\n")
+
+
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawTextHelpFormatter)
-    ap.add_argument("--days", type=int, default=30)
+    ap.add_argument("--days", type=int, default=14)
+    ap.add_argument("--max-per-company", type=int, default=6,
+                    help="cap on articles sent to the LLM per competitor")
     ap.add_argument("--per-query", type=int, default=8)
     ap.add_argument("--urls", type=Path, help="text file with one URL per line")
     ap.add_argument("--dry-run", action="store_true")
@@ -98,16 +127,23 @@ def main() -> None:
     elif args.urls:
         articles = articles_from_urls(args.urls)
     else:
-        articles = collect_all(args.days, args.per_query)
+        articles = collect_all(args.days, args.per_query, max_per_company=args.max_per_company,
+                               skip_urls={r.get("source_url", "") for r in db})
     print(f"    {len(articles)} articles")
 
     print("2/3 Extracting events with LLM ...")
-    raw = []
+    import os
+    import time
+    delay = float(os.getenv("CI_LLM_DELAY", "0"))  # pacing for free-tier rate limits
+    raw, llm_errors = [], 0
     for i, a in enumerate(articles, 1):
         try:
             raw.extend(extract_events(a))
         except Exception as exc:  # keep going if one call fails
+            llm_errors += 1
             print(f"    ! article {i} skipped: {exc}")
+        if delay:
+            time.sleep(delay)
     print(f"    {len(raw)} candidate events")
 
     print("3/3 Validating ...")
@@ -128,6 +164,8 @@ def main() -> None:
     for ev in verified + review:
         print(f"    [{ev['validation_status']}] {ev['company']}: {ev['headline']}  ({ev['checks']})")
 
+    if not args.demo:
+        write_run_log(args, articles, raw, verified, review, rejected, dupes, llm_errors)
     if args.dry_run:
         print("Dry run - nothing written.")
         return

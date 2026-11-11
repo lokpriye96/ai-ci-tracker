@@ -1,5 +1,9 @@
-"""Step 1 - Collect: pull recent headlines per competitor from Google News RSS,
-then fetch each article's text so the LLM reads the source, not just a headline."""
+"""Step 1 - Collect: find recent news per competitor, then fetch each article's
+text so the LLM reads the source itself, not just a headline.
+
+Primary source: GDELT DOC API (free, no key, returns direct publisher URLs).
+Fallback: Google News RSS (its links are redirects, so text may be unavailable).
+A keyword filter keeps only headlines that look like an event, to save LLM calls."""
 from __future__ import annotations
 
 import html
@@ -16,6 +20,11 @@ import requests
 from .config import COMPANIES, QUERY_TEMPLATES
 
 RSS_URL = "https://news.google.com/rss/search?q={q}&hl=en-IN&gl=IN&ceid=IN:en"
+GDELT_URL = "https://api.gdeltproject.org/api/v2/doc/doc"
+EVENT_WORDS = re.compile(
+    r"acqui|buy|stake|invest|partner|alliance|collaborat|tie-up|teams up|launch|unveil|"
+    r"introduc|agentic|\bAI\b|GenAI|generative|deal|contract|wins|GCC|capability cent|"
+    r"Centre of Excellence|Center of Excellence", re.I)
 HEADERS = {"User-Agent": "Mozilla/5.0 (CI-Tracker research bot; contact via GitHub)"}
 
 
@@ -58,6 +67,39 @@ def search_news(company: str, days: int = 30, per_query: int = 10) -> list[Artic
     return out
 
 
+def search_gdelt(company: str, days: int = 14, max_records: int = 40) -> list[Article]:
+    """Recent English-language articles that mention the company and AI."""
+    query = f'"{company}" (AI OR "artificial intelligence" OR agentic) sourcelang:english'
+    params = {"query": query, "mode": "ArtList", "format": "json", "sort": "DateDesc",
+              "maxrecords": str(max_records), "timespan": f"{days}d"}
+    resp = requests.get(GDELT_URL, params=params, headers=HEADERS, timeout=30)
+    resp.raise_for_status()
+    try:
+        items = resp.json().get("articles", [])
+    except ValueError:  # GDELT returns plain text on rate-limit or bad query
+        return []
+    return parse_gdelt(company, items)
+
+
+def parse_gdelt(company: str, items: list[dict]) -> list[Article]:
+    seen, out = set(), []
+    for it in items:
+        title = (it.get("title") or "").strip()
+        key = re.sub(r"\W+", "", title.lower())[:80]
+        if not title or key in seen:
+            continue
+        seen.add(key)
+        sd = it.get("seendate", "")
+        published = f"{sd[0:4]}-{sd[4:6]}-{sd[6:8]}" if len(sd) >= 8 else ""
+        out.append(Article(company=company, title=title, url=it.get("url", ""),
+                           published=published, source=it.get("domain", "")))
+    return out
+
+
+def looks_like_event(a: Article) -> bool:
+    return bool(EVENT_WORDS.search(a.title)) and a.company.split()[0].lower() in a.title.lower()
+
+
 class _TextExtractor(HTMLParser):
     """Minimal HTML -> text (keeps <p> and headings, drops scripts/nav)."""
     SKIP = {"script", "style", "nav", "footer", "header", "aside", "form"}
@@ -96,13 +138,27 @@ def fetch_text(url: str, max_chars: int = 12000) -> str:
     return parser.text()[:max_chars]
 
 
-def collect_all(days: int = 30, per_query: int = 10, with_text: bool = True) -> list[Article]:
+def collect_all(days: int = 14, per_query: int = 8, with_text: bool = True,
+                max_per_company: int = 6, skip_urls: set[str] | None = None) -> list[Article]:
+    """Collect, filter to likely events, cap per company, then fetch article text."""
+    skip_urls = skip_urls or set()
     articles = []
     for company in COMPANIES:
-        found = search_news(company, days=days, per_query=per_query)
+        try:
+            found, source = search_gdelt(company, days=days), "GDELT"
+        except requests.RequestException:
+            found = []
+        if not found:
+            try:
+                found, source = search_news(company, days=days, per_query=per_query), "Google News"
+            except requests.RequestException:
+                found, source = [], "none"
+        candidates = [a for a in found if looks_like_event(a) and a.url not in skip_urls]
+        picked = candidates[:max_per_company]
         if with_text:
-            for a in found:
+            for a in picked:
                 a.text = fetch_text(a.url)
-        articles.extend(found)
-        print(f"  {company}: {len(found)} articles")
+        articles.extend(picked)
+        print(f"  {company}: {len(found)} found via {source}, {len(picked)} event-like kept")
+        time.sleep(6)  # GDELT asks for one request every 5 seconds
     return articles
