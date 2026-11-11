@@ -1,0 +1,60 @@
+# Runs the CI tracker on GitHub: collect news -> LLM extraction (GitHub Models,
+# no API key needed) -> validation -> rebuild Excel, battle cards and dashboard.
+name: CI tracker refresh
+
+on:
+  workflow_dispatch:
+    inputs:
+      days:
+        description: "Look-back window in days"
+        default: "14"
+  schedule:
+    - cron: "17 3 * * 1"   # every Monday 03:17 UTC (08:47 IST)
+
+permissions:
+  contents: write   # commit refreshed data back to the repo
+  models: read      # call GitHub Models with the built-in token
+
+concurrency:
+  group: ci-tracker
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run tests (offline)
+        run: pytest -q
+
+      - name: Collect, extract and validate
+        env:
+          CI_LLM_PROVIDER: github
+          CI_LLM_MODEL: openai/gpt-4.1-mini
+          CI_LLM_DELAY: "5"
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: python run_pipeline.py --days "${{ github.event.inputs.days || '14' }}"
+
+      - name: Rebuild outputs
+        run: python build_outputs.py
+
+      - name: Commit refreshed data
+        run: |
+          git config user.name "ci-tracker-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data outputs docs
+          if git diff --cached --quiet; then
+            echo "No changes to commit."
+          else
+            git commit -m "Automated refresh: $(date -u +%Y-%m-%d)"
+            git push
+          fi
