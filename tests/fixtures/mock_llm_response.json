@@ -1,0 +1,52 @@
+{
+  "events": [
+    {
+      "company": "Infosys",
+      "event_date": "2026-11-02",
+      "date_precision": "Day",
+      "event_type": "Partnership",
+      "counterparty": "ExampleAI Labs",
+      "counterparty_type": "AI-native firm",
+      "headline": "Infosys partners with ExampleAI Labs on insurance claims agents",
+      "summary": "Joint build of claims-processing AI agents on Topaz, starting with two North American pilots.",
+      "strategic_theme": "Agentic AI offering",
+      "industry_focus": "Insurance",
+      "deal_value_usd_m": null,
+      "value_note": "Not disclosed",
+      "evidence_quote": "Infosys today announced a strategic partnership with ExampleAI Labs to build industry agents",
+      "confidence": "High"
+    },
+    {
+      "company": "Infosys",
+      "event_date": "2026-11-02",
+      "date_precision": "Day",
+      "event_type": "Acquisition",
+      "counterparty": "ExampleAI Labs",
+      "counterparty_type": "AI-native firm",
+      "headline": "Infosys acquires ExampleAI Labs for $200M",
+      "summary": "Hallucinated acquisition used to test the evidence check.",
+      "strategic_theme": "AI talent & IP acquisition",
+      "industry_focus": "Insurance",
+      "deal_value_usd_m": 200,
+      "value_note": "",
+      "evidence_quote": "Infosys will acquire ExampleAI Labs for 200 million dollars",
+      "confidence": "High"
+    },
+    {
+      "company": "Globex Consulting",
+      "event_date": "2031-01-01",
+      "date_precision": "Day",
+      "event_type": "Merger",
+      "counterparty": "",
+      "counterparty_type": "",
+      "headline": "Untracked company with impossible date",
+      "summary": "Should be rejected.",
+      "strategic_theme": "Other",
+      "industry_focus": "",
+      "deal_value_usd_m": null,
+      "value_note": "",
+      "evidence_quote": "n/a",
+      "confidence": "Low"
+    }
+  ]
+}

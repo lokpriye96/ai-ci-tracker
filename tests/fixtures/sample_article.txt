@@ -1,0 +1,5 @@
+Example Corp news desk (synthetic test article - not a real event)
+
+BENGALURU, 2 November 2026 - Infosys today announced a strategic partnership with ExampleAI Labs to build industry agents for insurance claims processing on Infosys Topaz.
+
+The companies said the partnership will start with two pilot clients in North America. Financial terms were not disclosed.

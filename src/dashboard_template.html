@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI Competitive Intelligence Tracker: GenAI race in IT services</title>
+<style>
+  .viz-root {
+    color-scheme: light;
+    --surface-0: #f4f4f1; --surface-1: #fcfcfb; --border: #e3e2dc;
+    --text-primary: #0b0b0b; --text-secondary: #52514e; --text-muted: #7a7974;
+    --accent: #1f3a5f;
+    --s1: #2a78d6; --s2: #eb6834; --s3: #1baf7a; --s4: #eda100;
+    --seq-0: #f0efec; --seq-1: #9ec5f4; --seq-2: #3987e5; --seq-3: #1c5cab;
+    --warn-bg: #fff4dc; --warn-ink: #7a5300;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:where(:not([data-theme="light"])) .viz-root {
+      color-scheme: dark;
+      --surface-0: #121211; --surface-1: #1a1a19; --border: #33322f;
+      --text-primary: #f0efec; --text-secondary: #c3c2b7; --text-muted: #8f8e88;
+      --accent: #9ec5f4;
+      --s1: #3987e5; --s2: #d95926; --s3: #199e70; --s4: #c98500;
+      --seq-0: #262624; --seq-1: #184f95; --seq-2: #2a78d6; --seq-3: #86b6ef;
+      --warn-bg: #3a2c0c; --warn-ink: #f3c96b;
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: Inter, "Segoe UI", Arial, sans-serif; }
+  .viz-root { background: var(--surface-0); color: var(--text-primary); min-height: 100vh;
+              padding: 28px clamp(16px, 4vw, 48px) 48px; font-size: 14px; line-height: 1.45; }
+  .wrap { max-width: 1180px; margin: 0 auto; }
+  header h1 { font-size: 26px; margin: 0 0 4px; letter-spacing: -0.01em; }
+  header p { margin: 0; color: var(--text-secondary); }
+  .eyebrow { text-transform: uppercase; font-size: 11px; letter-spacing: .08em; color: var(--text-muted); font-weight: 600; }
+  .kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin: 22px 0; }
+  .kpi { background: var(--surface-1); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; }
+  .kpi .v { font-size: 28px; font-weight: 650; font-variant-numeric: tabular-nums; }
+  .kpi .l { color: var(--text-secondary); font-size: 12px; }
+  .filters { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-bottom: 16px; }
+  .filters label { font-size: 12px; color: var(--text-secondary); display: flex; gap: 6px; align-items: center; }
+  select, input[type=search] { font: inherit; padding: 6px 10px; border-radius: 8px; border: 1px solid var(--border);
+                               background: var(--surface-1); color: var(--text-primary); }
+  .grid2 { display: grid; grid-template-columns: 1.15fr 1fr; gap: 16px; }
+  @media (max-width: 860px) { .grid2 { grid-template-columns: 1fr; } }
+  .card { background: var(--surface-1); border: 1px solid var(--border); border-radius: 12px; padding: 18px 18px 14px; margin-bottom: 16px; }
+  .card h2 { font-size: 15px; margin: 0 0 2px; }
+  .card .sub { color: var(--text-secondary); font-size: 12px; margin: 0 0 12px; }
+  .legend { display: flex; flex-wrap: wrap; gap: 14px; font-size: 12px; color: var(--text-secondary); margin-bottom: 8px; }
+  .legend span { display: inline-flex; align-items: center; gap: 6px; }
+  .sw { width: 10px; height: 10px; border-radius: 2px; display: inline-block; }
+  svg text { fill: var(--text-secondary); font-size: 12px; }
+  svg .val { fill: var(--text-primary); font-weight: 600; font-variant-numeric: tabular-nums; }
+  svg .gridline { stroke: var(--border); }
+  .hit { cursor: default; }
+  #tip { position: fixed; pointer-events: none; background: var(--surface-1); color: var(--text-primary);
+         border: 1px solid var(--border); border-radius: 8px; padding: 8px 10px; font-size: 12px; max-width: 300px;
+         box-shadow: 0 6px 20px rgba(0,0,0,.12); opacity: 0; transition: opacity .08s; z-index: 10; }
+  #tip b { display: block; margin-bottom: 2px; }
+  .finding { border-left: 3px solid var(--accent); padding: 4px 0 4px 12px; margin: 0 0 14px; }
+  .finding h3 { font-size: 14px; margin: 0 0 4px; }
+  .finding p { margin: 2px 0; color: var(--text-secondary); font-size: 13px; }
+  .finding p b { color: var(--text-primary); }
+  .bc { display: grid; grid-template-columns: 170px 1fr; gap: 6px 16px; }
+  .bc dt { color: var(--text-muted); font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: .04em; padding-top: 2px; }
+  .bc dd { margin: 0 0 6px; }
+  .tabs { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
+  .tabs button { font: inherit; font-size: 12px; padding: 5px 11px; border-radius: 999px; border: 1px solid var(--border);
+                 background: transparent; color: var(--text-secondary); cursor: pointer; }
+  .tabs button[aria-pressed=true] { background: var(--accent); color: var(--surface-1); border-color: var(--accent); }
+  table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+  th { text-align: left; color: var(--text-muted); font-weight: 600; font-size: 11px; text-transform: uppercase;
+       letter-spacing: .04em; border-bottom: 1px solid var(--border); padding: 8px 6px; position: sticky; top: 0; background: var(--surface-1); }
+  td { border-bottom: 1px solid var(--border); padding: 8px 6px; vertical-align: top; }
+  td.num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .tablewrap { max-height: 520px; overflow: auto; }
+  a { color: var(--s1); }
+  .pill { display: inline-block; font-size: 11px; padding: 1px 7px; border-radius: 999px; border: 1px solid var(--border); color: var(--text-secondary); white-space: nowrap; }
+  .pill.review { background: var(--warn-bg); color: var(--warn-ink); border-color: transparent; }
+  footer { color: var(--text-muted); font-size: 12px; margin-top: 18px; }
+</style>
+</head>
+<body>
+<div class="viz-root">
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Competitive intelligence · Independent portfolio project</div>
+    <h1>The GenAI race in IT services</h1>
+    <p>AI launches, partnerships, acquisitions and disclosures by 8 global IT services firms, Jun 2025 – Nov 2026.
+       Every event links to its source. Data as of <span id="asof"></span>.</p>
+  </header>
+
+  <div class="kpis" id="kpis"></div>
+
+  <div class="filters" role="group" aria-label="Filters">
+    <label>Competitor <select id="fCompany"><option value="">All</option></select></label>
+    <label>Event type <select id="fType"><option value="">All</option></select></label>
+    <label>Search <input type="search" id="fSearch" placeholder="e.g. Anthropic, GCC, insurance"></label>
+  </div>
+
+  <div class="grid2">
+    <section class="card">
+      <h2>Who is making the most AI moves?</h2>
+      <p class="sub">Events per competitor, split by type of move</p>
+      <div class="legend" id="legendBars"></div>
+      <svg id="bars" width="100%" role="img" aria-label="Stacked bar chart of events by competitor"></svg>
+    </section>
+    <section class="card">
+      <h2>Who is allied with whom?</h2>
+      <p class="sub">Announced ties with major AI and platform partners in the window (number = events)</p>
+      <svg id="heat" width="100%" role="img" aria-label="Partner map grid"></svg>
+    </section>
+  </div>
+
+  <section class="card">
+    <h2>Timeline of moves</h2>
+    <p class="sub">Each mark is one event. Hover for details. Shape and colour both show the type of move.</p>
+    <div class="legend" id="legendTime"></div>
+    <svg id="timeline" width="100%" role="img" aria-label="Timeline of events by competitor"></svg>
+  </section>
+
+  <section class="card">
+    <h2>Key findings</h2>
+    <p class="sub">Analyst view. Event IDs in brackets link back to the evidence table below.</p>
+    <div id="findings"></div>
+    <h3 style="font-size:13px;margin:14px 0 6px">90-day watch list</h3>
+    <ul id="watch" style="margin:0;padding-left:18px;color:var(--text-secondary)"></ul>
+  </section>
+
+  <section class="card">
+    <h2>Battle cards</h2>
+    <p class="sub">'How to compete' is written for a hypothetical mid-tier IT services challenger.</p>
+    <div class="tabs" id="bcTabs" role="tablist"></div>
+    <dl class="bc" id="bcBody"></dl>
+  </section>
+
+  <section class="card">
+    <h2>Evidence table <span class="sub" id="rowcount"></span></h2>
+    <p class="sub">The structured database behind every chart. 'Needs review' = held for human verification.</p>
+    <div class="tablewrap"><table id="tbl">
+      <thead><tr><th>ID</th><th>Date</th><th>Company</th><th>Type</th><th>Event</th><th>Partner / target</th><th>$M</th><th>Source</th><th>Status</th></tr></thead>
+      <tbody></tbody></table></div>
+  </section>
+
+  <footer>Method: news collection → LLM extraction to a fixed schema → rule-based validation (evidence-quote check,
+    de-duplication, source tiering) → human review → analyst synthesis. Built with Python, an LLM API, Excel and this page.
+    Public information only; not affiliated with any company named; not investment advice.</footer>
+</div>
+</div>
+<div id="tip" role="tooltip"></div>
+
+<script>
+/*__DATA__*/
+const D = window.CI_DATA;
+const css = n => getComputedStyle(document.querySelector('.viz-root')).getPropertyValue(n).trim();
+const GROUPS = [
+  {k: 'Acquire & invest', types: ['Acquisition', 'Investment', 'Divestiture'], v: '--s1', shape: 'circle'},
+  {k: 'Partner', types: ['Partnership'], v: '--s2', shape: 'square'},
+  {k: 'Build & launch', types: ['Launch', 'Talent / CoE'], v: '--s3', shape: 'diamond'},
+  {k: 'Deals & results', types: ['Deal / GCC', 'Financial disclosure', 'Client proof point'], v: '--s4', shape: 'triangle'},
+];
+const groupOf = t => GROUPS.find(g => g.types.includes(t)) || GROUPS[3];
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const NS = 'http://www.w3.org/2000/svg';
+const el = (tag, attrs, parent) => { const e = document.createElementNS(NS, tag);
+  for (const k in attrs) e.setAttribute(k, attrs[k]); if (parent) parent.appendChild(e); return e; };
+const tip = document.getElementById('tip');
+function showTip(ev, html) { tip.innerHTML = html; tip.style.opacity = 1;
+  const x = Math.min(ev.clientX + 14, innerWidth - 320), y = ev.clientY + 14; tip.style.left = x + 'px'; tip.style.top = y + 'px'; }
+function hideTip() { tip.style.opacity = 0; }
+function bindTip(node, html) { node.addEventListener('mousemove', e => showTip(e, html));
+  node.addEventListener('mouseleave', hideTip); }
+
+document.getElementById('asof').textContent = D.as_of;
+const fC = document.getElementById('fCompany'), fT = document.getElementById('fType'), fS = document.getElementById('fSearch');
+D.companies.forEach(c => fC.add(new Option(c, c)));
+[...new Set(D.events.map(e => e.event_type))].sort().forEach(t => fT.add(new Option(t, t)));
+
+function filtered() {
+  const q = fS.value.trim().toLowerCase();
+  return D.events.filter(e => (!fC.value || e.company === fC.value) && (!fT.value || e.event_type === fT.value)
+    && (!q || [e.headline, e.summary, e.counterparty, e.strategic_theme, e.industry_focus].join(' ').toLowerCase().includes(q)));
+}
+
+function kpis(rows) {
+  const acq = rows.filter(r => r.event_type === 'Acquisition');
+  const val = acq.reduce((s, r) => s + (parseFloat(r.deal_value_usd_m) || 0), 0);
+  const prim = rows.length ? Math.round(100 * rows.filter(r => r.source_tier === 'Primary').length / rows.length) : 0;
+  const items = [[rows.length, 'Events tracked'], [rows.filter(r => r.event_type === 'Partnership').length, 'Partnerships'],
+    [acq.length, 'Acquisitions'], ['$' + (val / 1000).toFixed(1) + 'B', 'Disclosed acquisition value (floor)'],
+    [prim + '%', 'From primary sources'], [rows.filter(r => r.validation_status !== 'Verified').length, 'Held for human review']];
+  document.getElementById('kpis').innerHTML = items.map(([v, l]) => `<div class="kpi"><div class="v">${v}</div><div class="l">${l}</div></div>`).join('');
+}
+
+function legend(id, withShape) {
+  document.getElementById(id).innerHTML = GROUPS.map(g => `<span>${withShape ? shapeSvg(g) : `<i class="sw" style="background:var(${g.v})"></i>`}${g.k}</span>`).join('');
+}
+function shapeSvg(g) { return `<svg width="12" height="12" viewBox="-6 -6 12 12">${shapePath(g.shape, 5, `var(${g.v})`)}</svg>`; }
+function shapePath(shape, r, fill) {
+  if (shape === 'circle') return `<circle r="${r}" fill="${fill}"/>`;
+  if (shape === 'square') return `<rect x="${-r*.85}" y="${-r*.85}" width="${r*1.7}" height="${r*1.7}" rx="1" fill="${fill}"/>`;
+  if (shape === 'diamond') return `<path d="M0 ${-r*1.15} L${r*1.15} 0 L0 ${r*1.15} L${-r*1.15} 0Z" fill="${fill}"/>`;
+  return `<path d="M0 ${-r*1.1} L${r*1.1} ${r*.9} L${-r*1.1} ${r*.9}Z" fill="${fill}"/>`;
+}
+
+function bars(rows) {
+  const svg = document.getElementById('bars'); svg.innerHTML = '';
+  const W = svg.clientWidth || 560, rowH = 30, top = 6, left = 110, right = 36;
+  const cos = D.companies.map(c => ({c, n: GROUPS.map(g => rows.filter(r => r.company === c && g.types.includes(r.event_type)).length)}))
+    .map(o => ({...o, t: o.n.reduce((a, b) => a + b, 0)})).sort((a, b) => b.t - a.t);
+  const max = Math.max(1, ...cos.map(o => o.t)), H = top + cos.length * rowH + 22;
+  svg.setAttribute('viewBox', `0 0 ${W} ${H}`); svg.setAttribute('height', H);
+  const x = v => left + v / max * (W - left - right);
+  for (let t = 0; t <= max; t += Math.max(1, Math.ceil(max / 5))) {
+    el('line', {x1: x(t), x2: x(t), y1: top, y2: H - 20, class: 'gridline'}, svg);
+    el('text', {x: x(t), y: H - 6, 'text-anchor': 'middle'}, svg).textContent = t;
+  }
+  cos.forEach((o, i) => {
+    const y = top + i * rowH + 6, h = rowH - 12;
+    el('text', {x: left - 10, y: y + h / 2 + 4, 'text-anchor': 'end'}, svg).textContent = o.c;
+    let acc = 0;
+    o.n.forEach((n, gi) => { if (!n) return;
+      const x0 = x(acc), w = Math.max(0, x(acc + n) - x0 - 2);
+      const r = el('rect', {x: x0, y, width: w, height: h, rx: 3, fill: css(GROUPS[gi].v), class: 'hit'}, svg);
+      bindTip(r, `<b>${o.c} · ${GROUPS[gi].k}</b>${n} event${n > 1 ? 's' : ''} (${GROUPS[gi].types.join(', ')})`);
+      acc += n; });
+    el('text', {x: x(o.t) + 6, y: y + h / 2 + 4, class: 'val'}, svg).textContent = o.t;
+  });
+}
+
+function heat(rows) {
+  const svg = document.getElementById('heat'); svg.innerHTML = '';
+  const W = svg.clientWidth || 480, left = 104, top = 70, cw = (W - left - 6) / D.partners.length, ch = 30;
+  const H = top + D.companies.length * ch + 4;
+  svg.setAttribute('viewBox', `0 0 ${W} ${H}`); svg.setAttribute('height', H);
+  D.partners.forEach((p, j) => { const tx = left + j * cw + cw / 2;
+    el('text', {x: tx, y: top - 10, transform: `rotate(-35 ${tx} ${top - 10})`}, svg).textContent = p; });
+  const fills = [css('--seq-0'), css('--seq-1'), css('--seq-2'), css('--seq-3')];
+  D.companies.forEach((c, i) => {
+    el('text', {x: left - 10, y: top + i * ch + ch / 2 + 4, 'text-anchor': 'end'}, svg).textContent = c;
+    D.partners.forEach((p, j) => {
+      const ev = rows.filter(r => r.company === c && (r.counterparty || '').includes(p)); const n = ev.length;
+      const r = el('rect', {x: left + j * cw + 1, y: top + i * ch + 1, width: cw - 2, height: ch - 2, rx: 4,
+        fill: fills[Math.min(n, 3)], class: 'hit'}, svg);
+      if (n) el('text', {x: left + j * cw + cw / 2, y: top + i * ch + ch / 2 + 4, 'text-anchor': 'middle',
+        class: 'val', style: `fill:${n >= 2 ? '#fff' : 'var(--text-primary)'}`}, svg).textContent = n;
+      bindTip(r, `<b>${c} × ${p}</b>` + (n ? ev.map(e => `${e.event_id}: ${esc(e.headline)}`).join('<br>') : 'No event in window'));
+    });
+  });
+}
+
+function timeline(rows) {
+  const svg = document.getElementById('timeline'); svg.innerHTML = '';
+  const W = svg.clientWidth || 1100, left = 110, right = 20, top = 10, rowH = 34;
+  const H = top + D.companies.length * rowH + 28;
+  svg.setAttribute('viewBox', `0 0 ${W} ${H}`); svg.setAttribute('height', H);
+  const t0 = new Date('2025-06-01'), t1 = new Date('2026-11-30');
+  const x = d => left + (new Date(d) - t0) / (t1 - t0) * (W - left - right);
+  for (let m = new Date(t0); m <= t1; m.setMonth(m.getMonth() + 1)) {
+    const xm = x(m); el('line', {x1: xm, x2: xm, y1: top, y2: H - 24, class: 'gridline'}, svg);
+    if ([0, 3, 6, 9].includes(m.getMonth()))
+      el('text', {x: xm, y: H - 8, 'text-anchor': 'middle'}, svg).textContent =
+        m.toLocaleString('en', {month: 'short'}) + " '" + String(m.getFullYear()).slice(2);
+  }
+  D.companies.forEach((c, i) => {
+    const cy = top + i * rowH + rowH / 2;
+    el('text', {x: left - 10, y: cy + 4, 'text-anchor': 'end'}, svg).textContent = c;
+    el('line', {x1: left, x2: W - right, y1: cy, y2: cy, class: 'gridline'}, svg);
+    const evs = rows.filter(r => r.company === c).sort((a, b) => a.event_date.localeCompare(b.event_date));
+    const placed = [];
+    evs.forEach(e => { const g = groupOf(e.event_type); let px = x(e.event_date), dy = 0;
+      while (placed.some(p => Math.abs(p.x - px) < 12 && p.dy === dy)) dy = dy <= 0 ? -dy + 11 : -dy;
+      placed.push({x: px, dy});
+      const grp = el('g', {transform: `translate(${px},${cy + dy})`, class: 'hit'}, svg);
+      grp.innerHTML = `<circle r="11" fill="transparent"/>` + shapePath(g.shape, 5.5, css(g.v)).replace('/>', ` stroke="${css('--surface-1')}" stroke-width="2"/>`);
+      bindTip(grp, `<b>${esc(e.headline)}</b>${e.event_date} · ${e.event_type}${e.counterparty ? ' · ' + esc(e.counterparty) : ''}<br><span style="color:var(--text-secondary)">${esc(e.summary)}</span>`);
+    });
+  });
+}
+
+function table(rows) {
+  const tb = document.querySelector('#tbl tbody');
+  tb.innerHTML = [...rows].sort((a, b) => b.event_date.localeCompare(a.event_date)).map(e => `<tr id="row-${e.event_id}">
+    <td>${e.event_id}</td><td style="white-space:nowrap">${e.event_date}</td><td>${esc(e.company)}</td><td>${esc(e.event_type)}</td>
+    <td><b>${esc(e.headline)}</b><br><span style="color:var(--text-secondary)">${esc(e.summary)}</span></td>
+    <td>${esc(e.counterparty)}</td><td class="num">${e.deal_value_usd_m ? Number(e.deal_value_usd_m).toLocaleString() : '–'}</td>
+    <td><a href="${esc(e.source_url)}" target="_blank" rel="noopener">${esc(e.source_name)}</a><br><span class="pill">${e.source_tier}</span></td>
+    <td><span class="pill ${e.validation_status === 'Verified' ? '' : 'review'}">${e.validation_status}</span></td></tr>`).join('');
+  document.getElementById('rowcount').textContent = `· ${rows.length} rows`;
+}
+
+function findings() {
+  const link = s => esc(s).replace(/\[([A-Z]{3}-\d{3}(?:\.\.\d{3})?(?:, [A-Z]{3}-\d{3})*)\]/g,
+    (m, ids) => '[' + ids.split(', ').map(id => `<a href="#row-${id.split('..')[0]}">${id}</a>`).join(', ') + ']');
+  document.getElementById('findings').innerHTML = D.findings.map((f, i) =>
+    `<div class="finding"><h3>${i + 1}. ${esc(f.title)}</h3><p><b>Evidence:</b> ${link(f.evidence)}</p><p><b>So what:</b> ${esc(f.so_what)}</p></div>`).join('');
+  document.getElementById('watch').innerHTML = D.watch.map(w => `<li>${link(w)}</li>`).join('');
+}
+
+function cards() {
+  const tabs = document.getElementById('bcTabs'), body = document.getElementById('bcBody');
+  const labels = [['positioning', 'Positioning'], ['ai_assets', 'Flagship AI assets'], ['key_moves', 'Key moves'],
+    ['strengths', 'Strengths'], ['gaps', 'Gaps / watch-outs'], ['how_to_win', 'How to compete']];
+  const show = c => { [...tabs.children].forEach(b => b.setAttribute('aria-pressed', b.textContent === c));
+    body.innerHTML = labels.map(([k, l]) => `<dt>${l}</dt><dd>${esc(D.cards[c][k])}</dd>`).join(''); };
+  Object.keys(D.cards).forEach(c => { const b = document.createElement('button'); b.textContent = c;
+    b.setAttribute('role', 'tab'); b.onclick = () => show(c); tabs.appendChild(b); });
+  show(Object.keys(D.cards)[0]);
+}
+
+function render() { const r = filtered(); kpis(r); bars(r); heat(r); timeline(r); table(r); }
+legend('legendBars', false); legend('legendTime', true); findings(); cards();
+[fC, fT].forEach(s => s.addEventListener('change', render)); fS.addEventListener('input', render);
+addEventListener('resize', () => { clearTimeout(window._rt); window._rt = setTimeout(render, 120); });
+matchMedia('(prefers-color-scheme: dark)').addEventListener('change', render);
+render();
+</script>
+</body>
+</html>
