@@ -112,11 +112,11 @@ def call_llm(prompt: str) -> dict:
             headers={"Authorization": f"Bearer {os.environ['GITHUB_TOKEN']}",
                      "Content-Type": "application/json"},
             json={"model": model, "temperature": 0,
-                  "response_format": {"type": "json_object"},
                   "messages": [{"role": "user", "content": prompt + "\n\nReturn only JSON."}]},
             timeout=90,
         )
-        r.raise_for_status()
+        if r.status_code != 200:
+            raise RuntimeError(f"GitHub Models HTTP {r.status_code}: {r.text[:300]}")
         return _parse_json(r.json()["choices"][0]["message"]["content"])
 
     raise ValueError(f"Unknown CI_LLM_PROVIDER: {provider}")

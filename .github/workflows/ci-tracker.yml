@@ -36,11 +36,20 @@ jobs:
       - name: Run tests (offline)
         run: pytest -q
 
+      - name: Check GitHub Models access (one test call)
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          curl -s -w "\nHTTP %{http_code}\n" https://models.github.ai/inference/chat/completions \
+            -H "Authorization: Bearer $GITHUB_TOKEN" -H "Content-Type: application/json" \
+            -d '{"model":"openai/gpt-4.1-mini","messages":[{"role":"user","content":"Reply with the word OK"}]}' | tail -c 600
+
       - name: Collect, extract and validate
         env:
           CI_LLM_PROVIDER: github
           CI_LLM_MODEL: openai/gpt-4.1-mini
           CI_LLM_DELAY: "5"
+          PYTHONUNBUFFERED: "1"
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: python run_pipeline.py --days "${{ github.event.inputs.days || '14' }}"
 
