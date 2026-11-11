@@ -25,7 +25,7 @@ concurrency:
 jobs:
   refresh:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 45
     env:
       HAS_KEY: ${{ secrets.GEMINI_API_KEY != '' }}
     steps:
@@ -50,9 +50,10 @@ jobs:
         env:
           CI_LLM_PROVIDER: gemini
           CI_LLM_DELAY: "5"
+          CI_LLM_BUDGET_MIN: "20"
           PYTHONUNBUFFERED: "1"
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-        run: python run_pipeline.py --days "${{ github.event.inputs.days || '14' }}"
+        run: python run_pipeline.py --days "${{ github.event.inputs.days || '14' }}" --max-per-company 4
 
       - name: Rebuild outputs
         if: env.HAS_KEY == 'true'
