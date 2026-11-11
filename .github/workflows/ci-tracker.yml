@@ -1,5 +1,6 @@
-# Runs the CI tracker on GitHub: collect news -> LLM extraction (GitHub Models,
-# no API key needed) -> validation -> rebuild Excel, battle cards and dashboard.
+# Runs the CI tracker on GitHub: collect news -> LLM extraction (Gemini) ->
+# validation -> rebuild Excel, battle cards and dashboard -> commit.
+# Needs one repository secret: GEMINI_API_KEY (Settings > Secrets and variables > Actions).
 name: CI tracker refresh
 
 on:
@@ -16,7 +17,6 @@ on:
 
 permissions:
   contents: write   # commit refreshed data back to the repo
-  models: read      # call GitHub Models with the built-in token
 
 concurrency:
   group: ci-tracker
@@ -26,6 +26,8 @@ jobs:
   refresh:
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    env:
+      HAS_KEY: ${{ secrets.GEMINI_API_KEY != '' }}
     steps:
       - uses: actions/checkout@v4
 
@@ -39,30 +41,25 @@ jobs:
       - name: Run tests (offline)
         run: pytest -q
 
-      - name: Check GitHub Models access (one test call per endpoint)
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          curl -s -w "\nHTTP %{http_code}\n" https://models.github.ai/inference/chat/completions \
-            -H "Authorization: Bearer $GITHUB_TOKEN" -H "Content-Type: application/json" \
-            -d '{"model":"openai/gpt-4.1-mini","messages":[{"role":"user","content":"Return the JSON {\"ok\": true}"}]}' | tail -c 800
-          curl -s -i -w "\nHTTP %{http_code}\n" https://models.inference.ai.azure.com/chat/completions \
-            -H "Authorization: Bearer $GITHUB_TOKEN" -H "Content-Type: application/json" \
-            -d '{"model":"gpt-4.1-mini","messages":[{"role":"user","content":"Return the JSON {\"ok\": true}"}]}' | tail -c 800
+      - name: No API key yet
+        if: env.HAS_KEY != 'true'
+        run: echo "GEMINI_API_KEY secret not set - skipping the live LLM run."
 
       - name: Collect, extract and validate
+        if: env.HAS_KEY == 'true'
         env:
-          CI_LLM_PROVIDER: github
-          CI_LLM_MODEL: openai/gpt-4.1-mini
+          CI_LLM_PROVIDER: gemini
           CI_LLM_DELAY: "5"
           PYTHONUNBUFFERED: "1"
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: python run_pipeline.py --days "${{ github.event.inputs.days || '14' }}"
 
       - name: Rebuild outputs
+        if: env.HAS_KEY == 'true'
         run: python build_outputs.py
 
       - name: Commit refreshed data
+        if: env.HAS_KEY == 'true'
         run: |
           git config user.name "ci-tracker-bot"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"

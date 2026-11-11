@@ -91,9 +91,9 @@ def test_gdelt_parsing_and_event_filter():
     assert [looks_like_event(a) for a in arts] == [True, False]
 
 
-def test_github_models_provider_is_registered():
+def test_llm_providers():
     from ci_tracker.llm import DEFAULT_MODELS
-    assert DEFAULT_MODELS["github"].startswith("openai/")
+    assert set(DEFAULT_MODELS) == {"gemini", "anthropic", "openai"}
 
 
 def test_bing_parsing_extracts_real_url():

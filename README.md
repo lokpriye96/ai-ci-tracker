@@ -75,7 +75,7 @@ The test suite feeds in a deliberately **hallucinated acquisition**. The validat
 ## Runs automatically on GitHub
 
 The pipeline runs in **GitHub Actions** every Monday, and on demand from the Actions tab ("CI tracker refresh" → *Run workflow*).
-The LLM step uses **GitHub Models** with the repository's built-in token, so no API key is stored anywhere.
+The LLM step uses the **Gemini API**; its key is stored as an encrypted GitHub secret and never appears in the code.
 Every run is recorded in [`outputs/run_log.md`](outputs/run_log.md): articles read, events extracted, verified, held for review and rejected, each with its source. New verified events flow into the database, Excel and dashboard automatically. Held events wait in `data/review_queue.csv` for analyst approval.
 
 ## Run it yourself
@@ -100,7 +100,7 @@ python build_outputs.py
 pytest -q
 ```
 
-Switch LLM provider with `CI_LLM_PROVIDER=gemini | anthropic | openai | github` in `.env`. Model names change often, so set `CI_LLM_MODEL` if the default has been retired.
+Switch LLM provider with `CI_LLM_PROVIDER=gemini | anthropic | openai` in `.env`. Model names change often, so set `CI_LLM_MODEL` if the default has been retired.
 
 ## Project structure
 

@@ -89,6 +89,9 @@ def write_run_log(args, articles, raw, verified, review, rejected, dupes, llm_er
              f"- Articles sent to LLM: {len(articles)} · LLM errors: {llm_errors}",
              f"- Candidate events: {len(raw)} → verified {len(verified)}, needs review {len(review)}, "
              f"rejected {len(rejected)}, duplicates skipped {dupes}"]
+    from ci_tracker.collect import COLLECTION_STATS
+    for st in COLLECTION_STATS:
+        lines.append(f"  - Collected: {st}")
     for err in error_samples:
         lines.append(f"  - LLM error sample: {err}")
     for ev in verified + review:

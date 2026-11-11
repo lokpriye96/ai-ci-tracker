@@ -4,7 +4,6 @@ Provider is chosen with the CI_LLM_PROVIDER environment variable:
   gemini    (default; free tier available)  needs GEMINI_API_KEY
   anthropic                                  needs ANTHROPIC_API_KEY
   openai                                     needs OPENAI_API_KEY
-  github    (GitHub Models; free, no extra key inside GitHub Actions)  uses GITHUB_TOKEN
   mock      (offline; returns a fixture, used by tests and demos)
 Model names change often, so each can be overridden with CI_LLM_MODEL.
 """
@@ -18,10 +17,9 @@ from pathlib import Path
 import requests
 
 DEFAULT_MODELS = {
-    "gemini": "gemini-2.5-flash",
+    "gemini": "gemini-flash-latest",
     "anthropic": "claude-sonnet-4-5",
     "openai": "gpt-4.1-mini",
-    "github": "openai/gpt-4.1-mini",
 }
 
 # JSON schema the model must follow (kept simple so every provider accepts it)
@@ -63,46 +61,6 @@ def _parse_json(text: str) -> dict:
     return json.loads(m.group(0) if m else text)
 
 
-GITHUB_ENDPOINTS = [
-    # (url, model-name transform). The second is GitHub Models' original endpoint.
-    ("https://models.github.ai/inference/chat/completions", lambda m: m),
-    ("https://models.inference.ai.azure.com/chat/completions", lambda m: m.split("/")[-1]),
-]
-
-
-def _github_models(prompt: str, model: str) -> dict:
-    """Call GitHub Models with the built-in Actions token; try both endpoints."""
-    import time
-    errors = []
-    for url, fix in GITHUB_ENDPOINTS:
-        body = {"model": fix(model), "temperature": 0,
-                "messages": [{"role": "system", "content": "You return only valid JSON."},
-                             {"role": "user", "content": prompt}]}
-        for attempt in range(4):
-            r = requests.post(url, json=body, timeout=120, headers={
-                "Authorization": f"Bearer {os.environ['GITHUB_TOKEN']}",
-                "Content-Type": "application/json", "Accept": "application/json"})
-            if r.status_code == 429 and attempt < 3:  # free-tier rate limit
-                time.sleep(int(r.headers.get("retry-after", "20")) + 2)
-                continue
-            break
-        host = url.split("/")[2]
-        if r.status_code != 200:
-            errors.append(f"{host} HTTP {r.status_code}: {r.text[:200]}")
-            continue
-        try:
-            content = r.json()["choices"][0]["message"]["content"] or ""
-        except (ValueError, KeyError, IndexError):
-            errors.append(f"{host} non-JSON reply {r.text[:60]!r} "
-                          f"(content-type {r.headers.get('content-type')}, server {r.headers.get('server')})")
-            continue
-        try:
-            return _parse_json(content)
-        except ValueError:
-            errors.append(f"{host} model reply not JSON: {content[:200]!r}")
-    raise RuntimeError(" | ".join(errors))
-
-
 def call_llm(prompt: str) -> dict:
     provider = os.getenv("CI_LLM_PROVIDER", "gemini").lower()
     model = os.getenv("CI_LLM_MODEL", DEFAULT_MODELS.get(provider, ""))
@@ -112,14 +70,21 @@ def call_llm(prompt: str) -> dict:
         return json.loads(fixture.read_text(encoding="utf-8"))
 
     if provider == "gemini":
+        import time
         url = (f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent"
                f"?key={os.environ['GEMINI_API_KEY']}")
         body = {
             "contents": [{"parts": [{"text": prompt}]}],
             "generationConfig": {"temperature": 0, "responseMimeType": "application/json"},
         }
-        r = requests.post(url, json=body, timeout=90)
-        r.raise_for_status()
+        for attempt in range(4):
+            r = requests.post(url, json=body, timeout=90)
+            if r.status_code in (429, 503) and attempt < 3:  # free-tier limits: back off
+                time.sleep(20 * (attempt + 1))
+                continue
+            break
+        if r.status_code != 200:
+            raise RuntimeError(f"Gemini HTTP {r.status_code}: {r.text[:300]}")
         return _parse_json(r.json()["candidates"][0]["content"]["parts"][0]["text"])
 
     if provider == "anthropic":
@@ -145,8 +110,5 @@ def call_llm(prompt: str) -> dict:
         )
         r.raise_for_status()
         return _parse_json(r.json()["choices"][0]["message"]["content"])
-
-    if provider == "github":
-        return _github_models(prompt, model)
 
     raise ValueError(f"Unknown CI_LLM_PROVIDER: {provider}")

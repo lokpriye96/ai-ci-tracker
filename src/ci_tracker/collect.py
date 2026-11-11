@@ -172,6 +172,9 @@ def fetch_text(url: str, max_chars: int = 12000) -> str:
     return parser.text()[:max_chars]
 
 
+COLLECTION_STATS: list[str] = []
+
+
 def collect_all(days: int = 14, per_query: int = 8, with_text: bool = True,
                 max_per_company: int = 6, skip_urls: set[str] | None = None) -> list[Article]:
     """Collect, filter to likely events, cap per company, then fetch article text."""
@@ -196,7 +199,9 @@ def collect_all(days: int = 14, per_query: int = 8, with_text: bool = True,
                 a.text = fetch_text(a.url)
         articles.extend(picked)
         with_text_n = sum(1 for a in picked if a.text)
-        print(f"  {company}: {len(found)} event-like via {source}, {len(picked)} kept, "
-              f"{with_text_n} with article text", flush=True)
+        msg = (f"{company}: {len(found)} event-like via {source}, {len(picked)} kept, "
+               f"{with_text_n} with article text")
+        COLLECTION_STATS.append(msg)
+        print("  " + msg, flush=True)
         time.sleep(6)  # GDELT asks for one request every 5 seconds
     return articles
