@@ -160,7 +160,7 @@ class _TextExtractor(HTMLParser):
         return re.sub(r"\n\s*\n+", "\n\n", "".join(self.parts)).strip()
 
 
-def fetch_text(url: str, max_chars: int = 12000) -> str:
+def fetch_text(url: str, max_chars: int = 6000) -> str:
     """Download an article and return readable text ('' on failure)."""
     try:
         resp = requests.get(url, headers=HEADERS, timeout=20, allow_redirects=True)

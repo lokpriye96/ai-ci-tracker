@@ -17,7 +17,7 @@ from pathlib import Path
 import requests
 
 DEFAULT_MODELS = {
-    "gemini": "gemini-flash-latest",
+    "gemini": "auto",  # picks the newest Flash-Lite / Flash model the key can use
     "anthropic": "claude-sonnet-4-5",
     "openai": "gpt-4.1-mini",
 }
@@ -61,6 +61,31 @@ def _parse_json(text: str) -> dict:
     return json.loads(m.group(0) if m else text)
 
 
+_GEMINI_MODEL_CACHE: dict = {}
+
+
+def pick_gemini_model(key: str) -> str:
+    """Choose a fast, non-thinking Gemini model available to this key (cached)."""
+    if "name" in _GEMINI_MODEL_CACHE:
+        return _GEMINI_MODEL_CACHE["name"]
+    r = requests.get(f"https://generativelanguage.googleapis.com/v1beta/models?key={key}&pageSize=200",
+                     timeout=30)
+    r.raise_for_status()
+    names = [m["name"].split("/")[-1] for m in r.json().get("models", [])
+             if "generateContent" in m.get("supportedGenerationMethods", [])]
+    stable = [n for n in names if "preview" not in n and "exp" not in n
+              and "tts" not in n and "image" not in n and "audio" not in n]
+    for pref in ("flash-lite", "flash"):
+        cands = sorted((n for n in stable if pref in n), reverse=True)
+        if cands:
+            # prefer explicit versions (e.g. gemini-2.5-flash-lite) over "-latest" aliases
+            versioned = [n for n in cands if any(ch.isdigit() for ch in n)]
+            _GEMINI_MODEL_CACHE["name"] = (versioned or cands)[0]
+            print(f"    Gemini model selected: {_GEMINI_MODEL_CACHE['name']}", flush=True)
+            return _GEMINI_MODEL_CACHE["name"]
+    raise RuntimeError(f"No Flash model available to this key; saw {names[:10]}")
+
+
 def call_llm(prompt: str) -> dict:
     provider = os.getenv("CI_LLM_PROVIDER", "gemini").lower()
     model = os.getenv("CI_LLM_MODEL", DEFAULT_MODELS.get(provider, ""))
@@ -71,21 +96,32 @@ def call_llm(prompt: str) -> dict:
 
     if provider == "gemini":
         import time
+        key = os.environ["GEMINI_API_KEY"]
+        if model in ("", "auto"):
+            model = pick_gemini_model(key)
         url = (f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent"
-               f"?key={os.environ['GEMINI_API_KEY']}")
+               f"?key={key}")
         body = {
             "contents": [{"parts": [{"text": prompt}]}],
-            "generationConfig": {"temperature": 0, "responseMimeType": "application/json"},
+            "generationConfig": {"temperature": 0, "responseMimeType": "application/json",
+                                 "maxOutputTokens": 2048},
         }
+        r = None
         for attempt in range(4):
-            r = requests.post(url, json=body, timeout=90)
-            if r.status_code in (429, 503) and attempt < 3:  # free-tier limits: back off
-                time.sleep(20 * (attempt + 1))
+            try:
+                r = requests.post(url, json=body, timeout=60)
+            except requests.Timeout:
+                if attempt < 3:
+                    continue
+                raise RuntimeError(f"Gemini ({model}) timed out 4 times")
+            if r.status_code in (429, 500, 503) and attempt < 3:  # free-tier limits: back off
+                time.sleep(15 * (attempt + 1))
                 continue
             break
         if r.status_code != 200:
-            raise RuntimeError(f"Gemini HTTP {r.status_code}: {r.text[:300]}")
-        return _parse_json(r.json()["candidates"][0]["content"]["parts"][0]["text"])
+            raise RuntimeError(f"Gemini ({model}) HTTP {r.status_code}: {r.text[:300]}")
+        parts = r.json()["candidates"][0]["content"]["parts"]
+        return _parse_json("".join(p.get("text", "") for p in parts))
 
     if provider == "anthropic":
         r = requests.post(

@@ -80,7 +80,8 @@ def write_run_log(args, articles, raw, verified, review, rejected, dupes, llm_er
     import os
     from datetime import datetime, timezone
     provider = os.getenv("CI_LLM_PROVIDER", "gemini")
-    model = os.getenv("CI_LLM_MODEL", "") or "default"
+    from ci_tracker.llm import _GEMINI_MODEL_CACHE
+    model = _GEMINI_MODEL_CACHE.get("name") or os.getenv("CI_LLM_MODEL", "") or "default"
     stamp = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
     lines = [f"\n## Run {stamp}" + (" (dry run)" if args.dry_run else ""),
              f"- Trigger: {'GitHub Actions' if os.getenv('GITHUB_ACTIONS') else 'local'}"
