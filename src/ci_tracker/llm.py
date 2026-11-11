@@ -63,6 +63,46 @@ def _parse_json(text: str) -> dict:
     return json.loads(m.group(0) if m else text)
 
 
+GITHUB_ENDPOINTS = [
+    # (url, model-name transform). The second is GitHub Models' original endpoint.
+    ("https://models.github.ai/inference/chat/completions", lambda m: m),
+    ("https://models.inference.ai.azure.com/chat/completions", lambda m: m.split("/")[-1]),
+]
+
+
+def _github_models(prompt: str, model: str) -> dict:
+    """Call GitHub Models with the built-in Actions token; try both endpoints."""
+    import time
+    errors = []
+    for url, fix in GITHUB_ENDPOINTS:
+        body = {"model": fix(model), "temperature": 0,
+                "messages": [{"role": "system", "content": "You return only valid JSON."},
+                             {"role": "user", "content": prompt}]}
+        for attempt in range(4):
+            r = requests.post(url, json=body, timeout=120, headers={
+                "Authorization": f"Bearer {os.environ['GITHUB_TOKEN']}",
+                "Content-Type": "application/json", "Accept": "application/json"})
+            if r.status_code == 429 and attempt < 3:  # free-tier rate limit
+                time.sleep(int(r.headers.get("retry-after", "20")) + 2)
+                continue
+            break
+        host = url.split("/")[2]
+        if r.status_code != 200:
+            errors.append(f"{host} HTTP {r.status_code}: {r.text[:200]}")
+            continue
+        try:
+            content = r.json()["choices"][0]["message"]["content"] or ""
+        except (ValueError, KeyError, IndexError):
+            errors.append(f"{host} non-JSON reply {r.text[:60]!r} "
+                          f"(content-type {r.headers.get('content-type')}, server {r.headers.get('server')})")
+            continue
+        try:
+            return _parse_json(content)
+        except ValueError:
+            errors.append(f"{host} model reply not JSON: {content[:200]!r}")
+    raise RuntimeError(" | ".join(errors))
+
+
 def call_llm(prompt: str) -> dict:
     provider = os.getenv("CI_LLM_PROVIDER", "gemini").lower()
     model = os.getenv("CI_LLM_MODEL", DEFAULT_MODELS.get(provider, ""))
@@ -107,30 +147,6 @@ def call_llm(prompt: str) -> dict:
         return _parse_json(r.json()["choices"][0]["message"]["content"])
 
     if provider == "github":
-        import time
-        body = {"model": model, "temperature": 0,
-                "messages": [{"role": "system", "content": "You return only valid JSON."},
-                             {"role": "user", "content": prompt}]}
-        for attempt in range(4):
-            r = requests.post(
-                "https://models.github.ai/inference/chat/completions",
-                headers={"Authorization": f"Bearer {os.environ['GITHUB_TOKEN']}",
-                         "Content-Type": "application/json", "Accept": "application/json"},
-                json=body, timeout=120,
-            )
-            if r.status_code == 429 and attempt < 3:  # free-tier rate limit: back off and retry
-                time.sleep(int(r.headers.get("retry-after", "20")) + 2)
-                continue
-            break
-        if r.status_code != 200:
-            raise RuntimeError(f"GitHub Models HTTP {r.status_code}: {r.text[:300]}")
-        try:
-            content = r.json()["choices"][0]["message"]["content"] or ""
-        except (ValueError, KeyError, IndexError) as exc:
-            raise RuntimeError(f"Unreadable GitHub Models response ({exc}): {r.text[:300]!r}")
-        try:
-            return _parse_json(content)
-        except ValueError as exc:
-            raise RuntimeError(f"Model reply was not JSON ({exc}): {content[:300]!r}")
+        return _github_models(prompt, model)
 
     raise ValueError(f"Unknown CI_LLM_PROVIDER: {provider}")
