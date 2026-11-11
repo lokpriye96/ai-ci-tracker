@@ -75,7 +75,7 @@ def next_id(company: str, existing: list[dict]) -> str:
     return f"{p}-{(max(nums) + 1 if nums else 1):03d}"
 
 
-def write_run_log(args, articles, raw, verified, review, rejected, dupes, llm_errors) -> None:
+def write_run_log(args, articles, raw, verified, review, rejected, dupes, llm_errors, error_samples) -> None:
     """Append a human-readable record of this run (public proof the pipeline runs)."""
     import os
     from datetime import datetime, timezone
@@ -89,6 +89,8 @@ def write_run_log(args, articles, raw, verified, review, rejected, dupes, llm_er
              f"- Articles sent to LLM: {len(articles)} · LLM errors: {llm_errors}",
              f"- Candidate events: {len(raw)} → verified {len(verified)}, needs review {len(review)}, "
              f"rejected {len(rejected)}, duplicates skipped {dupes}"]
+    for err in error_samples:
+        lines.append(f"  - LLM error sample: {err}")
     for ev in verified + review:
         lines.append(f"  - [{ev['validation_status']}] {ev['event_id']} {ev['company']}: "
                      f"{ev['headline']} ({ev['source_url']})")
@@ -135,13 +137,15 @@ def main() -> None:
     import os
     import time
     delay = float(os.getenv("CI_LLM_DELAY", "0"))  # pacing for free-tier rate limits
-    raw, llm_errors = [], 0
+    raw, llm_errors, error_samples = [], 0, []
     for i, a in enumerate(articles, 1):
         try:
             raw.extend(extract_events(a))
         except Exception as exc:  # keep going if one call fails
             llm_errors += 1
-            print(f"    ! article {i} skipped: {exc}")
+            if len(error_samples) < 3:
+                error_samples.append(str(exc)[:300])
+            print(f"    ! article {i} skipped: {exc}", flush=True)
         if delay:
             time.sleep(delay)
     print(f"    {len(raw)} candidate events")
@@ -165,7 +169,7 @@ def main() -> None:
         print(f"    [{ev['validation_status']}] {ev['company']}: {ev['headline']}  ({ev['checks']})")
 
     if not args.demo:
-        write_run_log(args, articles, raw, verified, review, rejected, dupes, llm_errors)
+        write_run_log(args, articles, raw, verified, review, rejected, dupes, llm_errors, error_samples)
     if args.dry_run:
         print("Dry run - nothing written.")
         return
