@@ -8,6 +8,9 @@ on:
       days:
         description: "Look-back window in days"
         default: "14"
+  push:
+    branches: [main]
+    paths: ["src/**", "prompts/**", "run_pipeline.py", ".github/workflows/ci-tracker.yml"]
   schedule:
     - cron: "17 3 * * 1"   # every Monday 03:17 UTC (08:47 IST)
 
@@ -42,7 +45,7 @@ jobs:
         run: |
           curl -s -w "\nHTTP %{http_code}\n" https://models.github.ai/inference/chat/completions \
             -H "Authorization: Bearer $GITHUB_TOKEN" -H "Content-Type: application/json" \
-            -d '{"model":"openai/gpt-4.1-mini","messages":[{"role":"user","content":"Reply with the word OK"}]}' | tail -c 600
+            -d '{"model":"openai/gpt-4.1-mini","messages":[{"role":"user","content":"Return the JSON {\"ok\": true}"}]}' | tail -c 800
 
       - name: Collect, extract and validate
         env:

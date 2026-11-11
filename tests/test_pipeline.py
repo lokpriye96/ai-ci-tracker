@@ -94,3 +94,12 @@ def test_gdelt_parsing_and_event_filter():
 def test_github_models_provider_is_registered():
     from ci_tracker.llm import DEFAULT_MODELS
     assert DEFAULT_MODELS["github"].startswith("openai/")
+
+
+def test_bing_parsing_extracts_real_url():
+    from ci_tracker.collect import parse_bing
+    xml = b"""<rss><channel><item><title>TCS partners with ExampleAI on agentic AI</title>
+    <link>http://www.bing.com/news/apiclick.aspx?ref=FexRss&amp;url=https%3a%2f%2fwww.example.com%2fnews%2ftcs&amp;c=1</link>
+    <pubDate>Tue, 10 Nov 2026 08:00:00 GMT</pubDate></item></channel></rss>"""
+    arts = parse_bing("TCS", xml)
+    assert arts[0].url == "https://www.example.com/news/tcs" and arts[0].published == "2026-11-10"
