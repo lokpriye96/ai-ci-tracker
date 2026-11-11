@@ -1,0 +1,10 @@
+company,event_date,event_type,headline,source_url,checks
+,2026-11-10,Financial disclosure,,https://www.fool.com/coverage/better-buy/2026/11/10/accenture-vs-palo-alto-networks-which-technology-stock-is-a-better-buy-in-2026/,company not in tracked list
+,2026-04-10,Partnership,,https://cio.economictimes.indiatimes.com/news/corporate-news/tcs-bets-on-ai-hiring-partnerships-as-currency-gains-lift-margins-eyes-360-degree-ecosystem-play/130164858,company not in tracked list
+,2026-04-10,Financial disclosure,,https://cio.economictimes.indiatimes.com/news/corporate-news/tcs-bets-on-ai-hiring-partnerships-as-currency-gains-lift-margins-eyes-360-degree-ecosystem-play/130164858,company not in tracked list
+,2026-04-10,Talent / CoE,,https://cio.economictimes.indiatimes.com/news/corporate-news/tcs-bets-on-ai-hiring-partnerships-as-currency-gains-lift-margins-eyes-360-degree-ecosystem-play/130164858,company not in tracked list
+,2025-04-29,Launch,,https://finance.yahoo.com/news/announcing-infosys-topaz-sap-4hana-102000879.html,company not in tracked list; event before tracking window
+,2026-11-10,Partnership,,https://www.unite.ai/labelbox-and-wipro-partner-on-ai-agents-that-learn-from-work/,company not in tracked list
+HCLTech,2024-11-09,Partnership,,https://www.businesswire.com/news/home/20241110239225/en/HCLTech-Integrates-AI-Force-with-GitHub-Copilot-to-Accelerate-Value-and-Benefits-Across-the-Software-Development-Lifecycle,event before tracking window; article text unavailable (headline only)
+,2026-11-10,Talent / CoE,,https://www.livemint.com/companies/cognizant-to-tie-job-titles-to-ai-adoption-in-major-workforce-revamp-11794319497907.html,company not in tracked list
+Capgemini,2025-05-14,Launch,,https://finance.yahoo.com/news/capgemini-leads-paradigm-shift-mainframe-063000019.html,event before tracking window
