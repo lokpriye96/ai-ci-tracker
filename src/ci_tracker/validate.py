@@ -51,6 +51,12 @@ def validate_event(ev: dict, today: date | None = None) -> dict:
     """Return the event with `checks`, `validation_status` and `confidence` set."""
     today = today or date.today()
     hard, soft = [], []
+    # LLMs sometimes return null or numbers; normalise every text field to a string
+    for k in ("company", "event_date", "date_precision", "event_type", "counterparty",
+              "counterparty_type", "headline", "summary", "strategic_theme", "industry_focus",
+              "value_note", "evidence_quote", "confidence", "source_name", "source_url"):
+        v = ev.get(k)
+        ev[k] = "" if v is None else str(v).strip()
 
     company = canonical_company(ev.get("company", ""))
     if not company:
@@ -66,7 +72,7 @@ def validate_event(ev: dict, today: date | None = None) -> dict:
             hard.append("event date is in the future")
         elif d < TRACKING_START:
             hard.append("event before tracking window")
-    except ValueError:
+    except (ValueError, TypeError):
         hard.append("event_date not YYYY-MM-DD")
 
     tier = source_tier(ev.get("source_url", ""))
@@ -85,7 +91,13 @@ def validate_event(ev: dict, today: date | None = None) -> dict:
     elif not quote_in_text(ev.get("evidence_quote", ""), article_text):
         soft.append("evidence quote not found in article (possible hallucination)")
 
-    if ev.get("deal_value_usd_m") not in (None, "") and not re.search(
+    try:
+        ev["deal_value_usd_m"] = (None if ev.get("deal_value_usd_m") in (None, "")
+                                  else float(ev["deal_value_usd_m"]))
+    except (TypeError, ValueError):
+        ev["deal_value_usd_m"] = None
+        soft.append("deal value not a number")
+    if ev.get("deal_value_usd_m") is not None and not re.search(
             r"\$|usd|dollar", article_text, re.I):
         soft.append("USD value given but article shows no USD figure")
 
@@ -108,7 +120,7 @@ def is_duplicate(ev: dict, existing: list[dict], window_days: int = 30) -> bool:
     """Same company + type + counterparty (or near-identical headline) within N days."""
     try:
         d = datetime.strptime(ev["event_date"], "%Y-%m-%d").date()
-    except (KeyError, ValueError):
+    except (KeyError, ValueError, TypeError):
         return False
     cp = (ev.get("counterparty") or "").lower().split(" (")[0].strip()
     head = set(_words(ev.get("headline", "")))

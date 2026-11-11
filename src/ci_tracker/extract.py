@@ -29,6 +29,7 @@ def extract_events(article: Article) -> list[dict]:
     """Return raw event dicts, each tagged with its source article."""
     result = call_llm(build_prompt(article))
     events = result.get("events", []) if isinstance(result, dict) else []
+    events = [ev for ev in events if isinstance(ev, dict)] if isinstance(events, list) else []
     for ev in events:
         ev["source_name"] = article.source
         ev["source_url"] = article.url
