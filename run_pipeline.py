@@ -141,8 +141,15 @@ def main() -> None:
     import os
     import time
     delay = float(os.getenv("CI_LLM_DELAY", "0"))  # pacing for free-tier rate limits
+    budget = float(os.getenv("CI_LLM_BUDGET_MIN", "0")) * 60  # stop calling the LLM after this
+    t0 = time.time()
+    unread = 0
     raw, llm_errors, error_samples = [], 0, []
     for i, a in enumerate(articles, 1):
+        if budget and time.time() - t0 > budget:
+            unread = len(articles) - i + 1
+            error_samples.append(f"time budget reached: {unread} articles left for next run")
+            break
         try:
             raw.extend(extract_events(a))
         except Exception as exc:  # keep going if one call fails
