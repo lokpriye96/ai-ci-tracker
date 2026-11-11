@@ -97,9 +97,9 @@ def write_run_log(args, articles, raw, verified, review, rejected, dupes, llm_er
         lines.append(f"  - LLM error sample: {err}")
     for ev in verified + review:
         lines.append(f"  - [{ev['validation_status']}] {ev['event_id']} {ev['company']}: "
-                     f"{ev['headline']} ({ev['source_url']})")
+                     f"{ev.get('headline', '')} ({ev.get('source_url', '')})")
     for ev in rejected:
-        lines.append(f"  - [Rejected] {ev.get('company', '?')}: {ev.get('headline', '')} - {ev['checks']}")
+        lines.append(f"  - [Rejected] {ev.get('company', '?')}: {ev.get('headline', '')} - {ev.get('checks', '')}")
     log = ROOT / "outputs" / "run_log.md"
     if not log.exists():
         log.write_text("# Pipeline run log\n\nEvery automated or manual run is recorded here.\n",
@@ -157,7 +157,13 @@ def main() -> None:
     print("3/3 Validating ...")
     verified, review, rejected, dupes = [], [], [], 0
     for ev in raw:
-        ev = validate_event(ev)
+        if not isinstance(ev, dict):
+            continue
+        try:
+            ev = validate_event(ev)
+        except Exception as exc:  # never let one malformed event stop the run
+            error_samples.append(f"validation error: {exc}"[:300])
+            continue
         if ev["validation_status"] == "Rejected":
             rejected.append(ev)
             continue

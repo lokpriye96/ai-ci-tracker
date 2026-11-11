@@ -103,3 +103,11 @@ def test_bing_parsing_extracts_real_url():
     <pubDate>Tue, 10 Nov 2026 08:00:00 GMT</pubDate></item></channel></rss>"""
     arts = parse_bing("TCS", xml)
     assert arts[0].url == "https://www.example.com/news/tcs" and arts[0].published == "2026-11-10"
+
+
+def test_validation_survives_null_fields():
+    ev = {"company": "TCS", "event_date": None, "event_type": "Partnership", "headline": None,
+          "counterparty": None, "deal_value_usd_m": "n/a", "source_url": "https://www.tcs.com/x",
+          "evidence_quote": None, "confidence": None, "_article_text": "TCS text"}
+    out = validate_event(ev, TODAY)
+    assert out["validation_status"] == "Rejected" and "event_date" in out["checks"]
