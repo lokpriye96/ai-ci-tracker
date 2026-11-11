@@ -39,13 +39,16 @@ jobs:
       - name: Run tests (offline)
         run: pytest -q
 
-      - name: Check GitHub Models access (one test call)
+      - name: Check GitHub Models access (one test call per endpoint)
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           curl -s -w "\nHTTP %{http_code}\n" https://models.github.ai/inference/chat/completions \
             -H "Authorization: Bearer $GITHUB_TOKEN" -H "Content-Type: application/json" \
             -d '{"model":"openai/gpt-4.1-mini","messages":[{"role":"user","content":"Return the JSON {\"ok\": true}"}]}' | tail -c 800
+          curl -s -i -w "\nHTTP %{http_code}\n" https://models.inference.ai.azure.com/chat/completions \
+            -H "Authorization: Bearer $GITHUB_TOKEN" -H "Content-Type: application/json" \
+            -d '{"model":"gpt-4.1-mini","messages":[{"role":"user","content":"Return the JSON {\"ok\": true}"}]}' | tail -c 800
 
       - name: Collect, extract and validate
         env:
