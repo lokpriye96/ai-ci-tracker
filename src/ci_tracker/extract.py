@@ -31,6 +31,10 @@ def extract_events(article: Article) -> list[dict]:
     events = result.get("events", []) if isinstance(result, dict) else []
     events = [ev for ev in events if isinstance(ev, dict)] if isinstance(events, list) else []
     for ev in events:
+        if not (ev.get("headline") or "").strip():
+            summ = (ev.get("summary") or "").strip()
+            first = summ.split(". ")[0].rstrip(".")
+            ev["headline"] = first if 0 < len(first) <= 110 else (article.title or summ)[:110]
         ev["source_name"] = article.source
         ev["source_url"] = article.url
         ev["_article_text"] = article.text

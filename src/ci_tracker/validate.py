@@ -14,6 +14,10 @@ from .config import (BLOCKED_DOMAINS, COMPANIES, EVENT_TYPES, PRIMARY_DOMAINS,
                      STRATEGIC_THEMES, TRACKING_START)
 
 
+_STOP = {"the", "a", "an", "and", "of", "to", "in", "for", "with", "on", "its", "by", "as", "at",
+         "is", "has", "will", "from", "that", "this", "it", "be", "are", "was"}
+
+
 def _words(s: str) -> list[str]:
     return re.sub(r"[^a-z0-9$%.]+", " ", (s or "").lower()).split()
 
@@ -137,6 +141,13 @@ def is_duplicate(ev: dict, existing: list[dict], window_days: int = 30) -> bool:
         same_cp = cp and old_cp and (cp in old_cp or old_cp in cp)
         old_head = set(_words(str(old.get("headline", ""))))
         overlap = len(head & old_head) / max(1, len(head | old_head))
-        if (same_cp and old.get("event_type") == ev.get("event_type")) or overlap > 0.6:
+        same_type = old.get("event_type") == ev.get("event_type")
+        same_url = ev.get("source_url") and ev.get("source_url") == old.get("source_url")
+        summ_a = set(_words(ev.get("summary", ""))) - _STOP
+        summ_b = set(_words(str(old.get("summary", "")))) - _STOP
+        summ_overlap = len(summ_a & summ_b) / max(1, min(len(summ_a), len(summ_b)))
+        if (same_cp and same_type) or overlap > 0.6 or (same_url and same_type):
+            return True
+        if same_type and abs((od - d).days) <= 14 and summ_overlap >= 0.5:
             return True
     return False

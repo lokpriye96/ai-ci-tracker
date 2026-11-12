@@ -1,6 +1,6 @@
 # Competitor battle cards: GenAI in IT services
 
-_As of 11 Nov 2026. 'How to compete' is written for a hypothetical mid-tier challenger. Strengths and gaps are analyst judgements based on the tracked public events ([data](../data/ci_events.csv))._
+_As of 12 Nov 2026. 'How to compete' is written for a hypothetical mid-tier challenger. Strengths and gaps are analyst judgements based on the tracked public events ([data](../data/ci_events.csv))._
 
 
 ## Accenture
@@ -20,7 +20,7 @@ _As of 11 Nov 2026. 'How to compete' is written for a hypothetical mid-tier chal
 |---|---|
 | **Positioning** | Aims to be 'the world's largest AI-led technology services company' |
 | **Flagship AI assets** | HyperVault AI infrastructure (100MW with OpenAI); Claude business unit; ADD AgentHub; Gemini Enterprise across its portfolio |
-| **Key moves** | AMD (Jan); OpenAI and HyperVault (Feb); ServiceNow (Feb); Google Cloud (Apr); Mistral Forge (May); Anthropic Global Premier Partner (Jun); Best Buy GCC (Q2 FY27) |
+| **Key moves** | ListEngage $72.8M (Oct-25) and Coastal Cloud (Dec-25, largest TCS deal); AMD (Jan); OpenAI and HyperVault (Feb); ServiceNow (Feb); Google Cloud (Apr); Mistral Forge (May); Anthropic Global Premier Partner (Jun); Best Buy GCC (Q2 FY27) |
 | **Strengths** | Broadest bench of model partners; AI revenue of $3.1B, more than 10% of the total; huge delivery scale; strong BFSI franchise |
 | **Gaps / watch-outs** | Headline growth is slow (~2.8% YoY in constant currency in Q2 FY27); India revenue dipped; so many partners risks diluting focus |
 | **How to compete** | Present breadth as complexity. Lead with one deep, certified platform partnership and a named team the client can meet |
@@ -86,7 +86,7 @@ _As of 11 Nov 2026. 'How to compete' is written for a hypothetical mid-tier chal
 |---|---|
 | **Positioning** | Telecom-first AI and India-built ('sovereign') AI platforms |
 | **Flagship AI assets** | Project Indus; TechM Orion; ontology-driven agentic platform with Microsoft; ServiceNow AI & Innovation CoE |
-| **Key moves** | Microsoft agentic platform for telecom (Mar); Avant acquisition (May); ServiceNow Client Zero and CoE (Aug); CoRover BharatGPT (Sep) |
+| **Key moves** | Microsoft agentic platform for telecom (Mar); Avant acquisition (May); ServiceNow Client Zero and CoE (Aug); AWS Agentic Process Transformation Center and CoRover BharatGPT (Sep); Google Cloud expansion, 12,500+ staff on Gemini (Oct) |
 | **Strengths** | Deep telecom domain; sovereign-AI story; credibility from using the ServiceNow platform itself first ('Client Zero') |
-| **Gaps / watch-outs** | Fewest AI events tracked (4); no frontier-lab alliance tracked; small-ticket M&A |
+| **Gaps / watch-outs** | Fewest AI events tracked (7); no frontier-lab alliance tracked; small-ticket M&A |
 | **How to compete** | Outside telecom their AI story is thinner. Compete in BFSI and manufacturing with stronger model partnerships |

@@ -1,6 +1,6 @@
 # Key findings: the GenAI race in IT services
 
-_As of 11 Nov 2026._
+_As of 12 Nov 2026._
 
 
 ### 1. Access to frontier models is now table stakes, so the race has moved to delivery capacity

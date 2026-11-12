@@ -5,7 +5,7 @@ cited in brackets). The LLM helps collect and structure the data; the "so what"
 is human judgement. Update after each refresh.
 """
 
-AS_OF = "11 Nov 2026"
+AS_OF = "12 Nov 2026"
 
 KEY_FINDINGS = [
     {
@@ -78,7 +78,7 @@ BATTLE_CARDS = {
     "TCS": {
         "positioning": "Aims to be 'the world's largest AI-led technology services company'",
         "ai_assets": "HyperVault AI infrastructure (100MW with OpenAI); Claude business unit; ADD AgentHub; Gemini Enterprise across its portfolio",
-        "key_moves": "AMD (Jan); OpenAI and HyperVault (Feb); ServiceNow (Feb); Google Cloud (Apr); Mistral Forge (May); Anthropic Global Premier Partner (Jun); Best Buy GCC (Q2 FY27)",
+        "key_moves": "ListEngage $72.8M (Oct-25) and Coastal Cloud (Dec-25, largest TCS deal); AMD (Jan); OpenAI and HyperVault (Feb); ServiceNow (Feb); Google Cloud (Apr); Mistral Forge (May); Anthropic Global Premier Partner (Jun); Best Buy GCC (Q2 FY27)",
         "strengths": "Broadest bench of model partners; AI revenue of $3.1B, more than 10% of the total; huge delivery scale; strong BFSI franchise",
         "gaps": "Headline growth is slow (~2.8% YoY in constant currency in Q2 FY27); India revenue dipped; so many partners risks diluting focus",
         "how_to_win": "Present breadth as complexity. Lead with one deep, certified platform partnership and a named team the client can meet",
@@ -126,9 +126,9 @@ BATTLE_CARDS = {
     "Tech Mahindra": {
         "positioning": "Telecom-first AI and India-built ('sovereign') AI platforms",
         "ai_assets": "Project Indus; TechM Orion; ontology-driven agentic platform with Microsoft; ServiceNow AI & Innovation CoE",
-        "key_moves": "Microsoft agentic platform for telecom (Mar); Avant acquisition (May); ServiceNow Client Zero and CoE (Aug); CoRover BharatGPT (Sep)",
+        "key_moves": "Microsoft agentic platform for telecom (Mar); Avant acquisition (May); ServiceNow Client Zero and CoE (Aug); AWS Agentic Process Transformation Center and CoRover BharatGPT (Sep); Google Cloud expansion, 12,500+ staff on Gemini (Oct)",
         "strengths": "Deep telecom domain; sovereign-AI story; credibility from using the ServiceNow platform itself first ('Client Zero')",
-        "gaps": "Fewest AI events tracked (4); no frontier-lab alliance tracked; small-ticket M&A",
+        "gaps": "Fewest AI events tracked (7); no frontier-lab alliance tracked; small-ticket M&A",
         "how_to_win": "Outside telecom their AI story is thinner. Compete in BFSI and manufacturing with stronger model partnerships",
     },
 }

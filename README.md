@@ -4,7 +4,7 @@
 An end-to-end competitive intelligence (CI) workflow. It uses an LLM to pull **launches, partnerships, acquisitions and AI disclosures** from public news, checks every event against its source, and turns the result into a **competitor database, battle cards and an interactive dashboard**.
 
 **Competitors tracked (8):** Accenture · TCS · Infosys · Wipro · HCLTech · Cognizant · Capgemini · Tech Mahindra
-**Window:** Jun 2025 – Nov 2026 · **Events:** 60 (58 verified, 2 held for review) · **Every event links to its source**
+**Window:** Jun 2025 – Nov 2026 · **Events:** 72 (70 verified, 2 held for review; 60 seed + 12 added by the live pipeline) · **Every event links to its source**
 
 🔗 **Live dashboard:** https://lokpriye96.github.io/ai-ci-tracker/
 
@@ -125,8 +125,8 @@ ai-ci-tracker/
 
 ## Method and limitations
 
-- **Sources:** public news and company press releases only. 42% of events come from primary sources (newsroom, wire service, filing); the rest from business and trade media.
-- **Human in the loop:** the LLM collects and structures the data; an analyst verifies sources and writes all findings. 2 events are deliberately left as *Needs review*.
+- **Sources:** public news and company press releases only. 35% of events come from primary sources (newsroom, wire service, filing); the rest from business and trade media.
+- **Human in the loop:** the LLM collects and structures the data; an analyst verifies sources and writes all findings. 2 events are deliberately left as *Needs review*, and the live pipeline's doubtful finds wait in `data/review_queue.csv`.
 - **Coverage, not completeness:** the tracker shows what was announced and captured in the window. It is not a complete list of every partnership a firm has.
 - **Not like-for-like financials:** AI-revenue figures use each company's own definition.
 - See [`docs/methodology.md`](docs/methodology.md) for the taxonomy and the review protocol.
