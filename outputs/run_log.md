@@ -43,3 +43,5 @@ Every automated or manual run is recorded here.
   - [Rejected] HCLTech:  - event before tracking window; article text unavailable (headline only)
   - [Rejected] :  - company not in tracked list
   - [Rejected] Capgemini:  - event before tracking window
+
+> **12 Nov 2026 – analyst review of run 43038980496:** removed 2 duplicates (INF-010, CAP-009), moved WIP-012 (general results, no AI angle) to review, re-typed WIP-011 as an Investment, and wrote missing headlines. Pipeline fixed so blank headlines and these duplicates are caught automatically.

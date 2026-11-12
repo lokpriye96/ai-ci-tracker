@@ -111,3 +111,26 @@ def test_validation_survives_null_fields():
           "evidence_quote": None, "confidence": None, "_article_text": "TCS text"}
     out = validate_event(ev, TODAY)
     assert out["validation_status"] == "Rejected" and "event_date" in out["checks"]
+
+
+def test_dedup_catches_same_event_without_counterparty():
+    old = [{"company": "Capgemini", "event_date": "2026-11-09", "event_type": "Deal / GCC",
+            "counterparty": "European Commission AI Office", "headline": "Capgemini leads EU AI consortium",
+            "summary": "Capgemini will lead a consortium to support the European Commission AI Office on advanced AI risks."}]
+    new = {"company": "Capgemini", "event_date": "2026-11-05", "event_type": "Deal / GCC", "counterparty": "",
+           "headline": "", "summary": "Capgemini was selected by the European Commission AI Office to lead a consortium on advanced AI risks."}
+    assert is_duplicate(new, old)
+
+
+def test_blank_headline_gets_fallback():
+    import json, os
+    from pathlib import Path
+    fx = Path("/tmp/blank_headline.json")
+    fx.write_text(json.dumps({"events": [{"company": "Infosys", "headline": "",
+                                          "summary": "Infosys partners with ExampleAI. More text."}]}))
+    os.environ["CI_MOCK_RESPONSE"] = str(fx)
+    try:
+        ev = extract_events(ARTICLE)[0]
+    finally:
+        os.environ["CI_MOCK_RESPONSE"] = str(ROOT / "tests/fixtures/mock_llm_response.json")
+    assert ev["headline"] == "Infosys partners with ExampleAI"
