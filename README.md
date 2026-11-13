@@ -143,6 +143,11 @@ This project practises what it studies: AI-assisted research with human control.
 
 Competitive intelligence & battle cards · secondary research & source validation · LLM-assisted extraction (prompting, structured JSON output, hallucination controls) · Python data pipelines · Excel modelling with live formulas · dashboard design · insight synthesis for decision-makers
 
+## Licence
+
+- **Analysis, data outputs, dashboard and write-up:** © 2026 Utkarsh Saxena, licensed [CC BY-NC-ND 4.0](LICENSE-CONTENT.md). You may share them unchanged with credit, but not change them or use them commercially without permission.
+- **Code** (`src/`, `prompts/`, `tests/`, pipeline scripts and workflow): [MIT](LICENSE-CODE).
+
 ---
 
 **Author:** Utkarsh Saxena, Market & Competitive Intelligence professional (TMT) · [LinkedIn](https://www.linkedin.com/in/utkarsh-lokpriye-)
