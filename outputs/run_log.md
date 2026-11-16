@@ -45,3 +45,32 @@ Every automated or manual run is recorded here.
   - [Rejected] Capgemini:  - event before tracking window
 
 > **12 Nov 2026 – analyst review of run 43038980496:** removed 2 duplicates (INF-010, CAP-009), moved WIP-012 (general results, no AI angle) to review, re-typed WIP-011 as an Investment, and wrote missing headlines. Pipeline fixed so blank headlines and these duplicates are caught automatically.
+
+## Run 2026-11-16 11:31 UTC
+- Trigger: GitHub Actions · run 43857574263
+- LLM: gemini / gemini-3.5-flash-lite · look-back 14 days
+- Articles sent to LLM: 32 · LLM errors: 0
+- Candidate events: 19 → verified 7, needs review 3, rejected 5, duplicates skipped 4
+  - Collected: Accenture: 10 event-like via Bing News, 4 kept, 1 with article text
+  - Collected: TCS: 10 event-like via Bing News, 4 kept, 3 with article text
+  - Collected: Infosys: 9 event-like via Bing News, 4 kept, 3 with article text
+  - Collected: Wipro: 10 event-like via Bing News, 4 kept, 3 with article text
+  - Collected: HCLTech: 11 event-like via Bing News, 4 kept, 3 with article text
+  - Collected: Cognizant: 12 event-like via Bing News, 4 kept, 3 with article text
+  - Collected: Capgemini: 7 event-like via Bing News, 4 kept, 4 with article text
+  - Collected: Tech Mahindra: 8 event-like via Bing News, 4 kept, 3 with article text
+  - [Verified] TCS-011 TCS: TCS hosts large-scale AI hackathon for non-engineering students (https://www.businesstoday.in/technology/story/building-ai-ready-workforce-tcs-hosts-ai-hackathon-for-10000-non-engineering-students-515941-2026-02-12)
+  - [Verified] WIP-012 Wipro: Capco recognized by OpenAI for AI innovation (https://finance.yahoo.com/technology/ai/articles/wipro-builds-ai-momentum-capco-002816032.html)
+  - [Verified] WIP-013 Wipro: Wipro completes data center migration for METRO (https://finance.yahoo.com/technology/ai/articles/wipro-builds-ai-momentum-capco-002816032.html)
+  - [Verified] HCL-012 HCLTech: HCLTech Secures $1.14 Billion Mega AI Deal From Mercedes-Benz (https://www.moneycontrol.com/news/business/information-technology/hcltech-reports-876-million-in-annualised-advanced-ai-revenue-up-72-yoy-14050421.html)
+  - [Verified] CAP-009 Capgemini: Capgemini and AWS build TELme conversational AI platform (https://www.crn.com/news/ai/2026/capgemini-vp-on-3-huge-aws-opportunities-and-ai-customer-wins)
+  - [Verified] CAP-010 Capgemini: Capgemini acquires WNS for agentic AI operations (https://www.crn.com/news/ai/2026/capgemini-vp-on-3-huge-aws-opportunities-and-ai-customer-wins)
+  - [Verified] CAP-011 Capgemini: Capgemini promotes AI Yield metric for value measurement (https://www.ad-hoc-news.de/boerse/news/corporate-news/capgemini-stock-gains-as-ai-costs-drive-multi-model-shift/70500055)
+  - [Needs review] INF-010 Infosys: Infosys to hire 20,000 freshers (https://www.msn.com/en-in/money/topstories/infosys-is-hiring-20000-freshers-in-the-ai-era-but-will-their-jobs-look-the-same/ar-AA2ei5wR)
+  - [Needs review] HCL-011 HCLTech: HCLTech reports $219 million in advanced AI revenue (https://www.businessworld.in/article/hcltech-flags-early-ai-led-deflation-as-advanced-ai-revenue-hits-219-mn-628175)
+  - [Needs review] TEM-009 Tech Mahindra: Tech Mahindra and Uniphore launch Agentic AI Factory partnership (https://www.msn.com/en-us/money/general/uniphore-and-tech-mahindra-launch-agentic-ai-factory-partnership/ar-AA2b7Mgk)
+  - [Rejected] : Accenture secures 850-role IT and AI outsourcing mandate from Qantas - company not in tracked list
+  - [Rejected] Infosys: Infosys Launches Topaz for SAP S/4HANA Cloud - event before tracking window
+  - [Rejected] : Wipro launches Google Gemini Experience Zone for AI adoption - company not in tracked list; event before tracking window
+  - [Rejected] : HCLTech partners with OpenAI for enterprise AI transformation - company not in tracked list
+  - [Rejected] : Cognizant acquires Wizeline for digital engineering expansion - company not in tracked list
