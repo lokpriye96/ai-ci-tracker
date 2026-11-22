@@ -125,7 +125,7 @@ ai-ci-tracker/
 ## Method and limitations
 
 - **Sources:** public news and company press releases only. 44% of events come from primary sources (newsroom, wire service, filing); the rest from business and trade media.
-- **Human in the loop:** the LLM collects and structures the data; an analyst verifies sources and writes all findings. Nothing the pipeline finds is published until an analyst approves it. The 22 Nov 2026 review removed 5 duplicate or mislabelled events, merged 2 split announcements, corrected dates and sources, and added 3 real events the pipeline had wrongly rejected (see `data/retired_ids.csv` and `outputs/run_log.md`).
+- **Human in the loop:** the LLM collects and structures the data; an analyst verifies sources and writes all findings. Nothing the pipeline finds is published until an analyst approves it. The 22 Nov 2026 review removed 5 duplicate or mislabelled events, merged 2 split announcements, corrected dates and sources, and added 7 events: 2 the pipeline had wrongly rejected, 3 cleared from the review queue and 2 it had missed (see `data/retired_ids.csv` and `outputs/run_log.md`).
 - **Coverage, not completeness:** the tracker shows what was announced and captured in the window. It is not a complete list of every partnership a firm has.
 - **Not like-for-like financials:** AI-revenue figures use each company's own definition.
 - See [`docs/methodology.md`](docs/methodology.md) for the taxonomy and the review protocol.
