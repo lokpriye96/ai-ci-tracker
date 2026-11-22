@@ -1,0 +1,14 @@
+event_id,action,"reason (analyst review, 22 Nov 2026)"
+CAP-010,Removed from database,"Duplicate of CAP-001 (Capgemini acquires WNS, Jul 2025); a later article only referred back to the deal"
+HCL-012,Removed from database,"Duplicate of HCL-005 ($1.14B AI deal, 3 Jul 2026); pipeline used the October results-article date"
+WIP-012,Removed from database,"Mislabelled: Capco being recognised by OpenAI is an award, not a partnership or any tracked event type"
+CAP-009,Removed from database,"Outside the tracking window: the TELme case study with AWS dates from 2024-25, before Jun 2025"
+ACN-008,Removed from database,"Mislabelled: the source reports Accenture was accused of AI-fabricated citations in a Nov 2025 paper, not a research partnership"
+CTS-010 (review queue),Review decision,"Approved: verified (Cognizant release, 10 Nov 2026); added to database"
+TEM-005 (review queue),Review decision,Approved: verified against Business Wire release (27 Aug 2026); added to database
+TEM-009 (review queue),Review decision,Rejected: duplicate of TEM-005 (same article)
+HCL-011 (review queue),Review decision,Approved: verified; added to database with the $876M annualised figure
+INF-010 (review queue),Review decision,"Rejected: fresher hiring plan, not an AI event"
+WIP-012 (review queue),Review decision,Rejected: quarterly results with no AI angle
+TEM-007,Merged into TEM-006,Same announcement as TEM-006 (Google Cloud partnership and Gemini training); one announcement is counted once
+WIP-010,Merged into WIP-009,Same announcement as WIP-009 (Labelbox partnership and Wipro Ventures stake); one announcement is counted once

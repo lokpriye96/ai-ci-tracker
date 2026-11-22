@@ -6,8 +6,9 @@
   python run_pipeline.py --dry-run           # extract + validate, write nothing
   python run_pipeline.py --demo              # offline demo: sample article + mock LLM
 
-Verified events are appended to data/ci_events.csv.
-Events that fail a soft check go to data/review_queue.csv for a human decision.
+Every new event goes to data/review_queue.csv. Events that pass all rule checks are marked
+"Awaiting approval"; events that fail a soft check are marked "Needs review". An analyst
+approves rows into data/ci_events.csv (use --auto-approve to skip this step for testing).
 Rejected events are logged in data/rejected_log.csv with the reason.
 """
 from __future__ import annotations
@@ -34,6 +35,7 @@ ROOT = Path(__file__).parent
 DB = ROOT / "data" / "ci_events.csv"
 REVIEW = ROOT / "data" / "review_queue.csv"
 REJECTED = ROOT / "data" / "rejected_log.csv"
+RETIRED = ROOT / "data" / "retired_ids.csv"   # IDs removed or merged at analyst review
 PREFIX = {"Accenture": "ACN", "TCS": "TCS", "Infosys": "INF", "Wipro": "WIP",
           "HCLTech": "HCL", "Cognizant": "CTS", "Capgemini": "CAP", "Tech Mahindra": "TEM"}
 
@@ -69,9 +71,13 @@ def articles_from_urls(path: Path) -> list[Article]:
 
 
 def next_id(company: str, existing: list[dict]) -> str:
+    """Next free ID for a competitor. Never reuses an ID that is in the review queue
+    or was retired at analyst review, so every ID points to one event forever."""
     p = PREFIX.get(company, "OTH")
-    nums = [int(r["event_id"].split("-")[1]) for r in existing
-            if r.get("event_id", "").startswith(p + "-")]
+    taken = [r.get("event_id", "") for r in existing + read_csv(REVIEW)]
+    taken += [r.get("event_id", "").split(" ")[0] for r in read_csv(RETIRED)]
+    nums = [int(i.split("-")[1]) for i in taken
+            if i.startswith(p + "-") and i.split("-")[1].isdigit()]
     return f"{p}-{(max(nums) + 1 if nums else 1):03d}"
 
 
@@ -117,6 +123,8 @@ def main() -> None:
     ap.add_argument("--urls", type=Path, help="text file with one URL per line")
     ap.add_argument("--dry-run", action="store_true")
     ap.add_argument("--demo", action="store_true", help="offline demo, implies --dry-run")
+    ap.add_argument("--auto-approve", action="store_true",
+                    help="write rule-passed events straight to the database (testing only)")
     args = ap.parse_args()
     if args.demo:
         import os
@@ -134,7 +142,8 @@ def main() -> None:
         articles = articles_from_urls(args.urls)
     else:
         articles = collect_all(args.days, args.per_query, max_per_company=args.max_per_company,
-                               skip_urls={r.get("source_url", "") for r in db})
+                               skip_urls={r.get("source_url", "") for r in
+                                          db + read_csv(REVIEW) + read_csv(REJECTED)})
     print(f"    {len(articles)} articles")
 
     print("2/3 Extracting events with LLM ...")
@@ -174,7 +183,7 @@ def main() -> None:
         if ev["validation_status"] == "Rejected":
             rejected.append(ev)
             continue
-        if is_duplicate(ev, db + verified + review):
+        if is_duplicate(ev, db + read_csv(REVIEW) + verified + review):
             dupes += 1
             continue
         ev["event_id"] = next_id(ev["company"], db + verified + review)
@@ -190,9 +199,14 @@ def main() -> None:
     if args.dry_run:
         print("Dry run - nothing written.")
         return
-    if verified:
-        append_csv(DB, verified, fields)
     review_fields = fields + ["evidence_quote", "checks"]
+    if verified and args.auto_approve:
+        append_csv(DB, verified, fields)
+    elif verified:
+        # human in the loop: rule-passed events wait for an analyst before they are published
+        for ev in verified:
+            ev["validation_status"] = "Awaiting approval"
+        append_csv(REVIEW, verified, review_fields)
     if review:
         append_csv(REVIEW, review, review_fields)
     if rejected:

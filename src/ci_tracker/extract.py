@@ -39,4 +39,5 @@ def extract_events(article: Article) -> list[dict]:
         ev["source_url"] = article.url
         ev["_article_text"] = article.text
         ev["_article_title"] = article.title
+        ev["_article_company"] = article.company  # fallback if the LLM leaves company blank
     return events

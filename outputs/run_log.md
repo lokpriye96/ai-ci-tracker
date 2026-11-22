@@ -74,3 +74,5 @@ Every automated or manual run is recorded here.
   - [Rejected] : Wipro launches Google Gemini Experience Zone for AI adoption - company not in tracked list; event before tracking window
   - [Rejected] : HCLTech partners with OpenAI for enterprise AI transformation - company not in tracked list
   - [Rejected] : Cognizant acquires Wizeline for digital engineering expansion - company not in tracked list
+
+> **22 Nov 2026 – analyst review:** all 79 events re-checked against their sources. Removed 5 (CAP-010 and HCL-012 repeated old deals; WIP-012 was an award, not a partnership; CAP-009 was a 2024-25 case study; ACN-008 was a report about AI-fabricated citations, not a partnership). Merged 2 split announcements (TEM-007 into TEM-006, WIP-010 into WIP-009). Corrected dates and sources, mostly to the original announcement. Added ACN-009 (Qantas) and CTS-011 (Wizeline), which the 16 Nov run had wrongly rejected because the LLM left the company blank, and cleared the review queue. Pipeline changed: from now on every new event waits in `data/review_queue.csv` until an analyst approves it. Details in `data/retired_ids.csv`.

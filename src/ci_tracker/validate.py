@@ -2,7 +2,7 @@
 
 Every extracted event gets a list of `checks`. Hard failures reject the event;
 soft failures send it to the human review queue. Only clean events are
-auto-approved as "Verified".
+marked "Verified" (passed rules); run_pipeline.py then holds them for analyst approval.
 """
 from __future__ import annotations
 
@@ -63,6 +63,9 @@ def validate_event(ev: dict, today: date | None = None) -> dict:
         ev[k] = "" if v is None else str(v).strip()
 
     company = canonical_company(ev.get("company", ""))
+    if not company and not ev.get("company"):
+        # the LLM left company blank: fall back to the competitor whose news query found the article
+        company = canonical_company(str(ev.get("_article_company") or ""))
     if not company:
         hard.append("company not in tracked list")
     ev["company"] = company or ev.get("company", "")
@@ -120,8 +123,15 @@ def validate_event(ev: dict, today: date | None = None) -> dict:
     return ev
 
 
+ONE_OFF_TYPES = {"Acquisition", "Investment", "Divestiture"}
+
+
 def is_duplicate(ev: dict, existing: list[dict], window_days: int = 30) -> bool:
-    """Same company + type + counterparty (or near-identical headline) within N days."""
+    """Same company + type + counterparty (or near-identical headline) within N days.
+
+    Two rules ignore the date window: a deal (acquisition, investment, divestiture) with the
+    same counterparty happens once, so a later article that mentions it again is a repeat;
+    and one source article with the same counterparty is one announcement, counted once."""
     try:
         d = datetime.strptime(ev["event_date"], "%Y-%m-%d").date()
     except (KeyError, ValueError, TypeError):
@@ -135,10 +145,14 @@ def is_duplicate(ev: dict, existing: list[dict], window_days: int = 30) -> bool:
             od = datetime.strptime(str(old["event_date"]), "%Y-%m-%d").date()
         except (KeyError, ValueError):
             continue
-        if abs((od - d).days) > window_days:
-            continue
         old_cp = str(old.get("counterparty") or "").lower().split(" (")[0].strip()
         same_cp = cp and old_cp and (cp in old_cp or old_cp in cp)
+        if same_cp and ev.get("event_type") in ONE_OFF_TYPES and old.get("event_type") in ONE_OFF_TYPES:
+            return True
+        if same_cp and ev.get("source_url") and ev.get("source_url") == old.get("source_url"):
+            return True
+        if abs((od - d).days) > window_days:
+            continue
         old_head = set(_words(str(old.get("headline", ""))))
         overlap = len(head & old_head) / max(1, len(head | old_head))
         same_type = old.get("event_type") == ev.get("event_type")

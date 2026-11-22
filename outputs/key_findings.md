@@ -1,22 +1,22 @@
 # Key findings: the GenAI race in IT services
 
-_As of 12 Nov 2026._
+_As of 22 Nov 2026._
 
 
 ### 1. Access to frontier models is now table stakes, so the race has moved to delivery capacity
 
-- **Evidence:** In the window, 5 of 8 firms announced an OpenAI tie-up and 3 an Anthropic one. TCS has the widest model bench: OpenAI, Anthropic, Mistral, Google Cloud and AMD [TCS-001..006].
-- **So what:** Saying 'we partner with OpenAI' no longer sets a firm apart. Buyers should ask who has certified people and live production references on each model.
+- **Evidence:** In the window, the same 5 of 8 firms announced both an OpenAI and an Anthropic tie-up: Accenture, TCS, Infosys, HCLTech and Cognizant [ACN-001, ACN-002, TCS-002, TCS-006, INF-001, INF-008, HCL-001, HCL-013, CTS-009, CTS-010]. TCS has the widest model bench: OpenAI, Anthropic, Mistral, Google Cloud and AMD [TCS-001..006].
+- **So what:** Saying 'we partner with OpenAI' no longer sets a firm apart. Buyers should ask who has certified people and live production references on each model. Wipro, Capgemini and Tech Mahindra have neither tie-up in the tracker, which leaves them exposed in model-led deals.
 
 ### 2. Talent has become the product: 'forward-deployed' and 'frontier' squads
 
-- **Evidence:** Cognizant: 25,000+ for OpenAI and 18,000+ for Gemini [CTS-009, CTS-008]. Wipro: 1,500 forward-deployed engineers [WIP-008]. Capgemini: Outcome Deployed Engineer pods [CAP-004]. Accenture: Anthropic Business Group [ACN-002].
+- **Evidence:** Cognizant: 25,000+ for Claude, 25,000+ for OpenAI and 18,000+ for Gemini [CTS-010, CTS-009, CTS-008]. Wipro: 1,500 forward-deployed engineers [WIP-008]. Capgemini: Outcome Deployed Engineer pods [CAP-004]. Accenture and HCLTech: dedicated Anthropic business units [ACN-002, HCL-013].
 - **So what:** Expect AI work to be sold as named, certified pods priced on outcomes, not on headcount. The people-model of IT services is being repackaged rather than replaced.
 
 ### 3. Two M&A playbooks: global majors buy scale, Indian majors buy vertical depth
 
-- **Evidence:** Capgemini–WNS $3.3B [CAP-001]. Accenture: $4.9B across 17 deals in FY26 [ACN-005]. Cognizant–Astreya ~$600M [CTS-004]. Indian peers made tuck-ins: Infosys in healthcare ($465M) and insurance ($95M); Tech Mahindra in payments; Wipro bought contracts.
-- **So what:** WNS on its own is worth more than all disclosed acquisitions by the four Indian firms in the tracker put together. Indian majors are trading scale for domain credibility.
+- **Evidence:** Capgemini–WNS $3.3B [CAP-001]. Accenture: $4.9B across 17 deals in FY26 [ACN-005]. Cognizant–Astreya ~$600M and Wizeline [CTS-004, CTS-011]. Indian peers made tuck-ins: Infosys in healthcare ($465M) and insurance ($95M) [INF-004, INF-005]; Tech Mahindra in payments [TEM-002]; Wipro bought contracts and raised its insurtech stake [WIP-005, WIP-007].
+- **So what:** WNS on its own ($3.3B) is worth more than every disclosed acquisition and stake bought by the five Indian firms in the tracker put together (about $2.6B). Indian majors are trading scale for domain credibility.
 
 ### 4. Buying a client's captive centre (GCC) has become a way to win deals
 
@@ -25,7 +25,7 @@ _As of 12 Nov 2026._
 
 ### 5. Firms are racing to disclose AI revenue, but the numbers can't be compared directly
 
-- **Evidence:** TCS: $3.1B annualised, more than 10% of revenue [TCS-007]. HCLTech: $620M of 'Advanced AI' [HCL-003]. Infosys: 5.5% of quarterly revenue (Dec-25) [INF-002]. Capgemini: more than 10% of Q4 bookings [CAP-003].
+- **Evidence:** TCS: $3.1B annualised, more than 10% of revenue [TCS-007]. HCLTech: 'Advanced AI' up from $620M to $876M annualised in two quarters [HCL-003, HCL-011]. Infosys: 10.5% of quarterly revenue in Sep-26, up from 5.5% in Dec-25 [INF-011, INF-002]. Capgemini: more than 10% of Q4 2025 bookings [CAP-003].
 - **So what:** Each firm defines 'AI revenue' differently: run-rate, bookings or a share of the quarter. Normalise the definitions before benchmarking, or the league table misleads.
 
 ### 6. Sovereign and India-built AI is a new axis of competition
@@ -36,7 +36,8 @@ _As of 12 Nov 2026._
 ## 90-day watch list
 
 - Robotiq.ai deal closing (HCLTech, expected Nov 2026) [HCL-009]
-- Whether Wipro or Tech Mahindra announce a frontier-lab alliance (no OpenAI or Anthropic tie-up tracked for either)
+- Whether Wipro, Capgemini or Tech Mahindra announce a frontier-lab alliance (no OpenAI or Anthropic tie-up tracked for any of them)
 - Accenture's ~$5B FY27 acquisition budget: which AI and industry targets [ACN-005]
 - Cognizant's first deployment-ready Frontier cohort (Q4 2026) and named client results [CTS-005]
-- Q3 FY27 results (Jan 2027): AI revenue disclosures from TCS, Infosys and HCLTech
+- Q3 FY27 results (Jan 2027): AI revenue disclosures from TCS, Infosys and HCLTech [TCS-007, INF-011, HCL-011]
+- Cognizant's Wizeline integration and Accenture's Qantas transition: early tests of AI-era outsourcing [CTS-011, ACN-009]

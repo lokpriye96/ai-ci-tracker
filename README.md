@@ -4,7 +4,7 @@
 An end-to-end competitive intelligence (CI) workflow. It uses an LLM to pull **launches, partnerships, acquisitions and AI disclosures** from public news, checks every event against its source, and turns the result into a **competitor database, battle cards and an interactive dashboard**.
 
 **Competitors tracked (8):** Accenture · TCS · Infosys · Wipro · HCLTech · Cognizant · Capgemini · Tech Mahindra
-**Window:** Jun 2025 – Nov 2026 · **Events:** 72 (70 verified, 2 held for review; 60 seed + 12 added by the live pipeline) · **Every event links to its source**
+**Window:** Jun 2025 – Nov 2026 · **Events:** 79, all verified against their source (last analyst review 22 Nov 2026) · **Every event links to its source**
 
 🔗 **Live dashboard:** https://lokpriye96.github.io/ai-ci-tracker/
 
@@ -41,8 +41,7 @@ Full write-up: [`outputs/key_findings.md`](outputs/key_findings.md) · Battle ca
 flowchart LR
     A[Collect<br/>GDELT news API, Google News<br/>or press-release URLs] --> B[Extract<br/>LLM to fixed JSON schema<br/>+ evidence quote]
     B --> C{Validate<br/>rule checks}
-    C -->|pass| D[(Competitor DB<br/>ci_events.csv)]
-    C -->|soft fail| E[Human review queue]
+    C -->|pass or soft fail| E[Human review queue]
     C -->|hard fail| F[Rejected log]
     E -->|analyst approves| D
     D --> G[Excel workbook<br/>live formulas]
@@ -58,7 +57,7 @@ flowchart LR
 | Evidence quote not found in article (possible hallucination) | **Review** |
 | USD value extracted but no USD figure in article | **Review** |
 | Model confidence low · article text unavailable | **Review** |
-| Same company + type + counterparty within 30 days | **De-duplicate** |
+| Same company + type + counterparty within 30 days · same deal or same source article mentioned again at any date | **De-duplicate** |
 | Company newsroom / wire service / exchange filing vs media | **Source tier** (Primary / Secondary) |
 
 The test suite feeds in a deliberately **hallucinated acquisition**. The validator catches it and sends it to review (`tests/test_pipeline.py`).
@@ -76,7 +75,7 @@ The test suite feeds in a deliberately **hallucinated acquisition**. The validat
 
 The pipeline runs in **GitHub Actions** every Monday, and on demand from the Actions tab ("CI tracker refresh" → *Run workflow*).
 The LLM step uses the **Gemini API**; its key is stored as an encrypted GitHub secret and never appears in the code.
-Every run is recorded in [`outputs/run_log.md`](outputs/run_log.md): articles read, events extracted, verified, held for review and rejected, each with its source. New verified events flow into the database, Excel and dashboard automatically. Held events wait in `data/review_queue.csv` for analyst approval.
+Every run is recorded in [`outputs/run_log.md`](outputs/run_log.md): articles read, events extracted, verified, held for review and rejected, each with its source. New events from automated runs, including those that pass every rule check, wait in `data/review_queue.csv`. Only analyst-approved events enter the database, Excel and dashboard. Removed or merged event IDs are logged with the reason in [`data/retired_ids.csv`](data/retired_ids.csv) and are never reused.
 
 ## Run it yourself
 
@@ -91,7 +90,7 @@ python run_pipeline.py --demo
 # 2. Real run: get a free Gemini API key at https://aistudio.google.com/apikey
 cp .env.example .env           # paste your key into .env
 python run_pipeline.py --days 7 --dry-run   # preview (GDELT news + LLM)
-python run_pipeline.py --days 7             # append verified events
+python run_pipeline.py --days 7             # add new events to the review queue
 
 # 3. Rebuild Excel, battle cards and dashboard from the database
 python build_outputs.py
@@ -125,8 +124,8 @@ ai-ci-tracker/
 
 ## Method and limitations
 
-- **Sources:** public news and company press releases only. 35% of events come from primary sources (newsroom, wire service, filing); the rest from business and trade media.
-- **Human in the loop:** the LLM collects and structures the data; an analyst verifies sources and writes all findings. 2 events are deliberately left as *Needs review*, and the live pipeline's doubtful finds wait in `data/review_queue.csv`.
+- **Sources:** public news and company press releases only. 44% of events come from primary sources (newsroom, wire service, filing); the rest from business and trade media.
+- **Human in the loop:** the LLM collects and structures the data; an analyst verifies sources and writes all findings. Nothing the pipeline finds is published until an analyst approves it. The 22 Nov 2026 review removed 5 duplicate or mislabelled events, merged 2 split announcements, corrected dates and sources, and added 3 real events the pipeline had wrongly rejected (see `data/retired_ids.csv` and `outputs/run_log.md`).
 - **Coverage, not completeness:** the tracker shows what was announced and captured in the window. It is not a complete list of every partnership a firm has.
 - **Not like-for-like financials:** AI-revenue figures use each company's own definition.
 - See [`docs/methodology.md`](docs/methodology.md) for the taxonomy and the review protocol.
@@ -136,7 +135,7 @@ ai-ci-tracker/
 This project practises what it studies: AI-assisted research with human control.
 
 - **AI tools used:** LLM assistants (Claude, Gemini) for news collection, first-pass extraction and code scaffolding.
-- **My role:** I set the business question, the competitor set and the taxonomy. I verified each event against its source and wrote the findings and battle cards. I also decided which events to hold for review.
+- **My role:** I set the business question, the competitor set and the taxonomy. I verified each event against its source and wrote the findings and battle cards. I also approve or reject every event the pipeline proposes.
 - **Rule followed throughout:** no event enters the database without a source link, and no finding is published without an event ID behind it.
 
 ## Skills demonstrated

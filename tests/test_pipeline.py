@@ -134,3 +134,47 @@ def test_blank_headline_gets_fallback():
     finally:
         os.environ["CI_MOCK_RESPONSE"] = str(ROOT / "tests/fixtures/mock_llm_response.json")
     assert ev["headline"] == "Infosys partners with ExampleAI"
+
+
+def test_old_deal_mentioned_again_is_duplicate():
+    # e.g. a Nov 2026 article that refers back to the Jul 2025 WNS acquisition
+    old = [{"company": "Capgemini", "event_date": "2025-07-07", "event_type": "Acquisition",
+            "counterparty": "WNS", "headline": "Capgemini to acquire WNS for $3.3B"}]
+    again = {"company": "Capgemini", "event_date": "2026-11-12", "event_type": "Acquisition",
+             "counterparty": "WNS", "headline": "Capgemini completes WNS integration"}
+    assert is_duplicate(again, old)
+
+
+def test_one_article_one_event_per_counterparty():
+    url = "https://example.com/techm-google"
+    old = [{"company": "Tech Mahindra", "event_date": "2026-10-05", "event_type": "Partnership",
+            "counterparty": "Google Cloud", "headline": "Tech Mahindra expands Google Cloud tie-up",
+            "source_url": url}]
+    split = {"company": "Tech Mahindra", "event_date": "2026-10-05", "event_type": "Talent / CoE",
+             "counterparty": "Google Cloud", "headline": "Tech Mahindra trains staff on Gemini",
+             "source_url": url}
+    assert is_duplicate(split, old)
+
+
+def test_blank_company_falls_back_to_article_company():
+    ev = {"company": "", "_article_company": "Accenture", "event_date": "2026-11-10",
+          "event_type": "Deal / GCC", "headline": "Qantas outsources roles", "source_url": "https://example.com/q",
+          "strategic_theme": "Intelligent operations", "_article_text": "Qantas and Accenture"}
+    assert validate_event(ev, TODAY)["company"] == "Accenture"
+
+
+def test_new_ids_never_reuse_retired_ids():
+    sys.path.insert(0, str(ROOT))
+    from run_pipeline import next_id, read_csv, DB, RETIRED
+    retired = {r["event_id"].split(" ")[0] for r in read_csv(RETIRED)}
+    for company in ("Capgemini", "HCLTech", "Wipro", "Accenture", "Tech Mahindra"):
+        assert next_id(company, read_csv(DB)) not in retired
+
+
+def test_database_has_no_duplicate_ids_or_shared_sources():
+    with (ROOT / "data/ci_events.csv").open(encoding="utf-8") as f:
+        db = list(csv.DictReader(f))
+    ids = [r["event_id"] for r in db]
+    assert len(ids) == len(set(ids))
+    urls = [r["source_url"] for r in db]
+    assert len(urls) == len(set(urls)), "two events cite the same article"
