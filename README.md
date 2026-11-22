@@ -111,7 +111,7 @@ ai-ci-tracker/
 ├── src/ci_tracker/
 │   ├── config.py              # competitors, taxonomy, source rules
 │   ├── collect.py             # GDELT / Google News + article text
-│   ├── llm.py                 # Gemini / Claude / OpenAI adapters (plain REST)
+│   ├── llm.py                 # LLM provider adapters (plain REST)
 │   ├── extract.py             # article → structured events
 │   ├── validate.py            # guard-rails + de-duplication
 │   └── insights.py            # analyst findings and battle cards
@@ -134,7 +134,7 @@ ai-ci-tracker/
 
 This project practises what it studies: AI-assisted research with human control.
 
-- **AI tools used:** LLM assistants (Claude, Gemini) for news collection, first-pass extraction and code scaffolding.
+- **AI tools used:** LLM assistants for news collection, first-pass extraction and code scaffolding.
 - **My role:** I set the business question, the competitor set and the taxonomy. I verified each event against its source and wrote the findings and battle cards. I also approve or reject every event the pipeline proposes.
 - **Rule followed throughout:** no event enters the database without a source link, and no finding is published without an event ID behind it.
 
