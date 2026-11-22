@@ -95,7 +95,7 @@ def build_excel(rows: list[dict]) -> Path:
     ov.cell(row=r, column=1, value="How this tracker works").font = BOLD
     steps = [
         "1. Collect: Google News RSS queries per competitor, or a pasted list of press-release URLs.",
-        "2. Extract: an LLM turns each article into structured events against a fixed taxonomy.",
+        "2. Extract: an LLM (Gemini, Claude or GPT) turns each article into structured events against a fixed taxonomy.",
         "3. Validate: rule checks (tracked company, valid date, accepted source, evidence quote found in article, de-duplication).",
         "4. Review: every new event waits in a human review queue; only analyst-approved events are published.",
         "5. Analyse: the analyst writes findings and battle cards; this workbook and the dashboard update from the same CSV.",
