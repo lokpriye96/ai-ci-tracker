@@ -38,7 +38,7 @@ The first live runs (11 and 16 Nov 2026) published rule-passed events straight t
 - **Added:** real events the pipeline had rejected because the LLM left the company blank (Accenture–Qantas, Cognizant–Wizeline), cleared review-queue items (Cognizant Claude group, Tech Mahindra–Uniphore, HCLTech $876M AI run-rate), and gaps found in checking (HCLTech–Anthropic, Infosys Q2 FY27 AI revenue).
 - **Pipeline fixes:** rule-passed events now wait for approval; the duplicate check covers the review queue and repeat mentions of old deals; IDs are never reused. Each fix has a regression test.
 
-Result: 79 events, all verified against their source. Every change is listed in `data/retired_ids.csv`.
+Result of the 22 Nov review: 79 events, all verified against their source. Every change is listed in `data/retired_ids.csv`.
 
 ## 7. Refresh cadence
 Automated weekly in GitHub Actions (Mondays) using the Gemini API. The analyst clears `data/review_queue.csv` after each run by typing Approve or Reject in each row's `decision` column and committing; the *Apply analyst review* workflow (`apply_review.py`) publishes the decisions and rebuilds all outputs. Findings are re-written monthly.

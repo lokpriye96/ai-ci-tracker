@@ -87,7 +87,7 @@
     <div class="eyebrow">Competitive intelligence · Independent portfolio project</div>
     <h1>The GenAI race in IT services</h1>
     <p>AI launches, partnerships, acquisitions and disclosures by 8 global IT services firms, Jun 2025 – Nov 2026.
-       Every event links to its source. Data as of <span id="asof"></span>.</p>
+       Every event links to its source. Data updated <span id="updated"></span>; findings as of <span id="asof"></span>.</p>
   </header>
 
   <div class="kpis" id="kpis"></div>
@@ -172,6 +172,7 @@ function bindTip(node, html) { node.addEventListener('mousemove', e => showTip(e
   node.addEventListener('mouseleave', hideTip); }
 
 document.getElementById('asof').textContent = D.as_of;
+document.getElementById('updated').textContent = D.updated || D.as_of;
 const fC = document.getElementById('fCompany'), fT = document.getElementById('fType'), fS = document.getElementById('fSearch');
 D.companies.forEach(c => fC.add(new Option(c, c)));
 [...new Set(D.events.map(e => e.event_type))].sort().forEach(t => fT.add(new Option(t, t)));
@@ -188,7 +189,7 @@ function kpis(rows) {
   const prim = rows.length ? Math.round(100 * rows.filter(r => r.source_tier === 'Primary').length / rows.length) : 0;
   const items = [[rows.length, 'Events tracked'], [rows.filter(r => r.event_type === 'Partnership').length, 'Partnerships'],
     [acq.length, 'Acquisitions'], ['$' + (val / 1000).toFixed(1) + 'B', 'Disclosed acquisition value (floor)'],
-    [prim + '%', 'From primary sources'], [rows.filter(r => r.validation_status !== 'Verified').length, 'Held for human review']];
+    [prim + '%', 'From primary sources'], [(D.pending || []).filter(p => (!fC.value || p.company === fC.value) && (!fT.value || p.event_type === fT.value)).length, 'Awaiting analyst approval']];
   document.getElementById('kpis').innerHTML = items.map(([v, l]) => `<div class="kpi"><div class="v">${v}</div><div class="l">${l}</div></div>`).join('');
 }
 

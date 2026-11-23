@@ -9,8 +9,10 @@ from __future__ import annotations
 
 import csv
 import json
+import re
 import sys
 from datetime import datetime
+from zoneinfo import ZoneInfo
 from pathlib import Path
 
 from openpyxl import Workbook
@@ -22,6 +24,16 @@ from openpyxl.utils import get_column_letter
 from openpyxl.worksheet.table import Table, TableStyleInfo
 
 ROOT = Path(__file__).parent
+UPDATED = datetime.now(ZoneInfo("Asia/Kolkata")).strftime("%d %b %Y").lstrip("0")
+
+
+def review_queue() -> list[dict]:
+    """Events found by the pipeline that are still waiting for the analyst's decision."""
+    path = ROOT / "data" / "review_queue.csv"
+    if not path.exists():
+        return []
+    with path.open(encoding="utf-8") as f:
+        return [r for r in csv.DictReader(f) if r.get("event_id")]
 sys.path.insert(0, str(ROOT / "src"))
 from ci_tracker.config import COMPANIES, EVENT_TYPES  # noqa: E402
 from ci_tracker.insights import AS_OF, BATTLE_CARDS, KEY_FINDINGS, WATCH_LIST  # noqa: E402
@@ -69,13 +81,13 @@ def build_excel(rows: list[dict]) -> Path:
     ov["A1"] = "AI-Powered Competitive Intelligence Tracker"
     ov["A1"].font = TITLE
     ov["A2"] = (f"The GenAI race in IT services: 8 competitors, Jun 2025 – Nov 2026 | "
-                f"Data as of {AS_OF} | Public sources only")
+                f"Data updated {UPDATED} | Findings as of {AS_OF} | Public sources only")
     ov["A2"].font = SUB
     ov["A4"], ov["A4"].font = "Headline metrics (live formulas on the Events sheet)", BOLD
     kpis = [
         ("Events tracked", f"=COUNTA({rng('event_id')})"),
         ("Verified events", f'=COUNTIF({rng("validation_status")},"Verified")'),
-        ("Events awaiting human review", f'=COUNTIF({rng("validation_status")},"Needs review")'),
+        ("Awaiting analyst approval (review queue)", len(review_queue())),
         ("Primary-source share", f'=IFERROR(COUNTIF({rng("source_tier")},"Primary")/B5,0)'),
         ("Acquisitions", f'=COUNTIF({rng("event_type")},"Acquisition")'),
         ("Partnerships", f'=COUNTIF({rng("event_type")},"Partnership")'),
@@ -324,7 +336,8 @@ def build_markdown() -> None:
 
 
 def build_dashboard_data(rows: list[dict]) -> None:
-    payload = {"as_of": AS_OF, "companies": list(COMPANIES), "partners": PARTNERS,
+    pending = [{"company": r["company"], "event_type": r["event_type"]} for r in review_queue()]
+    payload = {"as_of": AS_OF, "updated": UPDATED, "pending": pending, "companies": list(COMPANIES), "partners": PARTNERS,
                "events": rows, "findings": KEY_FINDINGS, "watch": WATCH_LIST,
                "cards": BATTLE_CARDS}
     (ROOT / "docs").mkdir(exist_ok=True)
@@ -333,9 +346,21 @@ def build_dashboard_data(rows: list[dict]) -> None:
     (ROOT / "docs/index.html").write_text(template.replace("/*__DATA__*/", data_js), encoding="utf-8")
 
 
+def update_readme(rows: list[dict]) -> None:
+    """Keep the headline count in the README in step with the database."""
+    path = ROOT / "README.md"
+    text = path.read_text(encoding="utf-8")
+    n = sum(r.get("validation_status") == "Verified" for r in rows)
+    line = (f"**Events:** {n} verified against their source, {len(review_queue())} awaiting "
+            f"analyst approval (updated {UPDATED})")
+    new = re.sub(r"\*\*Events:\*\* [^·\n]*", line + " ", text, count=1)
+    path.write_text(new, encoding="utf-8")
+
+
 if __name__ == "__main__":
     data = load()
     print("Excel:", build_excel(data))
     build_markdown()
     build_dashboard_data(data)
+    update_readme(data)
     print("Markdown + dashboard data written.")
