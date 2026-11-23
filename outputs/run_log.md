@@ -76,3 +76,35 @@ Every automated or manual run is recorded here.
   - [Rejected] : Cognizant acquires Wizeline for digital engineering expansion - company not in tracked list
 
 > **22 Nov 2026 – analyst review:** all 79 events reviewed; those with deal values, dates in question or weak sources re-checked against their sources (the rest were validated at the seed review). Added 7 in total. Removed 5 (CAP-010 and HCL-012 repeated old deals; WIP-012 was an award, not a partnership; CAP-009 was a 2024-25 case study; ACN-008 was a report about AI-fabricated citations, not a partnership). Merged 2 split announcements (TEM-007 into TEM-006, WIP-010 into WIP-009). Corrected dates and sources, mostly to the original announcement. Added ACN-009 (Qantas) and CTS-011 (Wizeline), which the 16 Nov run had wrongly rejected because the LLM left the company blank, and cleared the review queue. Pipeline changed: from now on every new event waits in `data/review_queue.csv` until an analyst approves it. Details in `data/retired_ids.csv`.
+
+## Run 2026-11-23 12:30 UTC
+- Trigger: GitHub Actions · run 45173968286
+- LLM: gemini / gemini-3.5-flash-lite · look-back 14 days
+- Articles sent to LLM: 32 · LLM errors: 0
+- Candidate events: 21 → verified 16, needs review 1, rejected 1, duplicates skipped 3
+  - Collected: Accenture: 12 event-like via Bing News, 4 kept, 3 with article text
+  - Collected: TCS: 11 event-like via Bing News, 4 kept, 4 with article text
+  - Collected: Infosys: 10 event-like via Bing News, 4 kept, 3 with article text
+  - Collected: Wipro: 11 event-like via Bing News, 4 kept, 4 with article text
+  - Collected: HCLTech: 11 event-like via Bing News, 4 kept, 3 with article text
+  - Collected: Cognizant: 12 event-like via Bing News, 4 kept, 4 with article text
+  - Collected: Capgemini: 10 event-like via Bing News, 4 kept, 4 with article text
+  - Collected: Tech Mahindra: 7 event-like via Bing News, 4 kept, 3 with article text
+  - [Verified] ACN-010 Accenture: Accenture and Mondelēz partner for agentic AI Order-to-Cash (https://finance.yahoo.com/technology/ai/articles/accenture-acn-expands-ai-major-181048770.html)
+  - [Verified] TCS-012 TCS: HCLTech Reports $219 Million in Q2 Advanced AI Revenue (https://www.businesstoday.in/markets/stocks/story/tcs-vs-hcl-tech-how-2-it-giants-stack-up-in-the-ai-race-after-q2-results-561285-2026-10-13)
+  - [Verified] TCS-013 TCS: HCLTech and Anthropic Form Global Premier Partnership (https://www.businesstoday.in/markets/stocks/story/tcs-vs-hcl-tech-how-2-it-giants-stack-up-in-the-ai-race-after-q2-results-561285-2026-10-13)
+  - [Verified] TCS-014 TCS: TCS expands AI partnership with ABB (https://yourstory.com/ai-story/tcs-abb-ai-deal-hiring-acquisitions)
+  - [Verified] TCS-015 TCS: TCS plans to deploy 8,900 forward-deployed engineers (https://yourstory.com/ai-story/tcs-abb-ai-deal-hiring-acquisitions)
+  - [Verified] WIP-014 Wipro: Wipro launches AI-Native Business and Platforms Unit (https://tech.yahoo.com/ai/articles/internet-agents-next-shift-wipro-130000362.html)
+  - [Verified] WIP-015 Wipro: Wipro selected for life sciences supply chain AI platform (https://supplychaindigital.com/news/how-wipro-deploys-wega-ai-agents-for-supply-chain-intelligen)
+  - [Verified] WIP-016 Wipro: Wipro closes US$2.6bn in total contract value (https://supplychaindigital.com/news/how-wipro-deploys-wega-ai-agents-for-supply-chain-intelligen)
+  - [Verified] HCL-015 HCLTech: HCLTech and NetApp partner for STaaS (https://telecom.economictimes.indiatimes.com/news/enterprise-services/hcltech-netapp-partner-on-staas-to-drive-enterprise-ai-adoption/133209645)
+  - [Verified] HCL-016 HCLTech: HCLTech partners with Cohere for sovereign AI solutions (https://cio.economictimes.indiatimes.com/news/business-analytics/hcltech-cohere-partner-to-build-sovereign-ai-solutions-for-enterprises-and-governments/135946935)
+  - [Verified] CTS-012 Cognizant: Cognizant launches Patient Hub Operations built with NVIDIA (https://finance.yahoo.com/technology/ai/articles/cognizant-technology-solutions-ctsh-puts-190639419.html)
+  - [Verified] CTS-013 Cognizant: Cognizant expands AI cybersecurity partnership with Qualys (https://finance.yahoo.com/technology/ai/articles/cognizant-technology-solutions-ctsh-puts-190639419.html)
+  - [Verified] CTS-014 Cognizant: Cognizant opens AI training centre in Chennai (https://www.moneycontrol.com/artificial-intelligence/cognizant-opens-chennai-training-centre-targets-15-000-ai-certified-employees-article-14085042.html)
+  - [Verified] CAP-012 Capgemini: Capgemini to lead European Commission AI safety consortium (https://finance.yahoo.com/technology/ai/articles/capgemini-selected-lead-european-commission-073000347.html)
+  - [Verified] TEM-010 Tech Mahindra: Tech Mahindra and Rezolve Ai form global agentic commerce alliance (https://finance.yahoo.com/technology/ai/articles/rezolve-ai-tech-mahindra-forge-120000727.html)
+  - [Verified] TEM-011 Tech Mahindra: Tech Mahindra Partners With SpaceXSI For AI-Assisted Software Engineering (https://www.rediff.com/business/report/tech-mahindra-and-spacexsi-partner-for-ai-software-engineering/20261022.htm)
+  - [Needs review] HCL-014 HCLTech: HCLTech Reports $219 Million in Advanced AI Revenue (https://www.businessworld.in/article/hcltech-flags-early-ai-led-deflation-as-advanced-ai-revenue-hits-219-mn-628175)
+  - [Rejected] Infosys: Infosys Launches Topaz for SAP S/4HANA Cloud - event before tracking window
