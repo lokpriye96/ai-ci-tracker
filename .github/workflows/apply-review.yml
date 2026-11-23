@@ -49,5 +49,6 @@ jobs:
             echo "No decisions to apply."
           else
             git commit -m "Apply analyst review: $(date -u +%Y-%m-%d)"
+            git pull --rebase origin main   # another run or an analyst commit may have landed first
             git push
           fi

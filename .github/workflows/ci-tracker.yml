@@ -69,5 +69,6 @@ jobs:
             echo "No changes to commit."
           else
             git commit -m "Automated refresh: $(date -u +%Y-%m-%d)"
+            git pull --rebase origin main   # another run or an analyst commit may have landed first
             git push
           fi
