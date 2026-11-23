@@ -108,3 +108,7 @@ Every automated or manual run is recorded here.
   - [Verified] TEM-011 Tech Mahindra: Tech Mahindra Partners With SpaceXSI For AI-Assisted Software Engineering (https://www.rediff.com/business/report/tech-mahindra-and-spacexsi-partner-for-ai-software-engineering/20261022.htm)
   - [Needs review] HCL-014 HCLTech: HCLTech Reports $219 Million in Advanced AI Revenue (https://www.businessworld.in/article/hcltech-flags-early-ai-led-deflation-as-advanced-ai-revenue-hits-219-mn-628175)
   - [Rejected] Infosys: Infosys Launches Topaz for SAP S/4HANA Cloud - event before tracking window
+
+## Analyst review 2026-11-23
+- approved 0, rejected 1, could not apply 0, still waiting 16
+  - [Rejected] TCS-012 TCS: HCLTech Reports $219 Million in Q2 Advanced AI Revenue - HCLTech news filed under TCS; duplicate of HCL-011
