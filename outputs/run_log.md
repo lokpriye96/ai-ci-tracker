@@ -112,3 +112,7 @@ Every automated or manual run is recorded here.
 ## Analyst review 2026-11-23
 - approved 0, rejected 1, could not apply 0, still waiting 16
   - [Rejected] TCS-012 TCS: HCLTech Reports $219 Million in Q2 Advanced AI Revenue - HCLTech news filed under TCS; duplicate of HCL-011
+
+## Analyst review 2026-11-23
+- approved 1, rejected 0, could not apply 0, still waiting 15
+  - [Approved] CTS-014 Cognizant: Cognizant opens AI training centre in Chennai
