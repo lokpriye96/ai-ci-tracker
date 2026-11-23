@@ -8,7 +8,8 @@
 
 Every new event goes to data/review_queue.csv. Events that pass all rule checks are marked
 "Awaiting approval"; events that fail a soft check are marked "Needs review". An analyst
-approves rows into data/ci_events.csv (use --auto-approve to skip this step for testing).
+types Approve or Reject in the first column and commits; apply_review.py then publishes
+approved rows to data/ci_events.csv (use --auto-approve to skip this step for testing).
 Rejected events are logged in data/rejected_log.csv with the reason.
 """
 from __future__ import annotations
@@ -48,7 +49,10 @@ def read_csv(path: Path) -> list[dict]:
 
 
 def append_csv(path: Path, rows: list[dict], fields: list[str]) -> None:
-    new = not path.exists()
+    new = not path.exists() or path.stat().st_size == 0
+    if not new:  # keep the file's own column order (e.g. the analyst's decision columns)
+        with path.open(encoding="utf-8") as f:
+            fields = next(csv.reader(f), fields) or fields
     with path.open("a", newline="", encoding="utf-8") as f:
         w = csv.DictWriter(f, fieldnames=fields, extrasaction="ignore")
         if new:
@@ -199,7 +203,7 @@ def main() -> None:
     if args.dry_run:
         print("Dry run - nothing written.")
         return
-    review_fields = fields + ["evidence_quote", "checks"]
+    review_fields = ["decision", "analyst_note"] + fields + ["evidence_quote", "checks"]
     if verified and args.auto_approve:
         append_csv(DB, verified, fields)
     elif verified:

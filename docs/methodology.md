@@ -41,4 +41,4 @@ The first live runs (11 and 16 Nov 2026) published rule-passed events straight t
 Result: 79 events, all verified against their source. Every change is listed in `data/retired_ids.csv`.
 
 ## 7. Refresh cadence
-Automated weekly in GitHub Actions (Mondays) using the Gemini API. The analyst clears `data/review_queue.csv` after each run and re-writes findings monthly.
+Automated weekly in GitHub Actions (Mondays) using the Gemini API. The analyst clears `data/review_queue.csv` after each run by typing Approve or Reject in each row's `decision` column and committing; the *Apply analyst review* workflow (`apply_review.py`) publishes the decisions and rebuilds all outputs. Findings are re-written monthly.

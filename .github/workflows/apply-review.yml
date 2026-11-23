@@ -1,0 +1,53 @@
+# Human-in-the-loop approval: runs when the analyst commits decisions in
+# data/review_queue.csv (Approve / Reject in the first column).
+# Publishes approved events, logs rejected ones, re-runs the tests and rebuilds
+# the Excel workbook, battle cards and dashboard. No API key needed.
+name: Apply analyst review
+
+on:
+  push:
+    branches: [main]
+    paths: ["data/review_queue.csv"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: ci-tracker
+  cancel-in-progress: false
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Apply Approve / Reject decisions
+        run: python apply_review.py
+
+      - name: Run tests (offline)
+        run: pytest -q
+
+      - name: Rebuild outputs
+        run: python build_outputs.py
+
+      - name: Commit published events
+        run: |
+          git config user.name "ci-tracker-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data outputs docs
+          if git diff --cached --quiet; then
+            echo "No decisions to apply."
+          else
+            git commit -m "Apply analyst review: $(date -u +%Y-%m-%d)"
+            git push
+          fi

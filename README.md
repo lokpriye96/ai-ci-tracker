@@ -77,6 +77,8 @@ The pipeline runs in **GitHub Actions** every Monday, and on demand from the Act
 The LLM step uses the **Gemini API**; its key is stored as an encrypted GitHub secret and never appears in the code.
 Every run is recorded in [`outputs/run_log.md`](outputs/run_log.md): articles read, events extracted, verified, held for review and rejected, each with its source. New events from automated runs, including those that pass every rule check, wait in `data/review_queue.csv`. Only analyst-approved events enter the database, Excel and dashboard. Removed or merged event IDs are logged with the reason in [`data/retired_ids.csv`](data/retired_ids.csv) and are never reused.
 
+**How an analyst approves events (no code):** open [`data/review_queue.csv`](data/review_queue.csv), click the pencil (Edit) icon, check each row's `source_url`, type `Approve` or `Reject` at the start of the row (the `decision` column), add a reason in `analyst_note` if useful, and click **Commit changes**. The **Apply analyst review** workflow then publishes approved events to the database, logs rejected ones in `retired_ids.csv`, re-runs the tests and rebuilds the Excel workbook and dashboard. A row that reuses an existing event ID or source article, or breaks the taxonomy, is not published; it stays in the queue with the reason.
+
 ## Run it yourself
 
 ```bash

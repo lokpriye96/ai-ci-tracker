@@ -178,3 +178,38 @@ def test_database_has_no_duplicate_ids_or_shared_sources():
     assert len(ids) == len(set(ids))
     urls = [r["source_url"] for r in db]
     assert len(urls) == len(set(urls)), "two events cite the same article"
+
+
+def test_apply_review_publishes_approved_and_blocks_bad_rows(tmp_path, monkeypatch):
+    sys.path.insert(0, str(ROOT))
+    import shutil
+    import apply_review as ar
+    for name in ("ci_events.csv", "retired_ids.csv"):
+        shutil.copy(ROOT / "data" / name, tmp_path / name)
+    db_fields, db = ar.read(tmp_path / "ci_events.csv")
+    base = {k: "" for k in db_fields}
+    good = dict(base, decision="Approve", event_id="TEST-001", company="Infosys",
+                event_date="2026-11-20", event_type="Partnership", strategic_theme="Frontier-lab alliance",
+                headline="Good event", source_url="https://example.com/new-article",
+                validation_status="Awaiting approval")
+    same_article = dict(good, event_id="TEST-002", headline="Second event, same article")
+    reused = dict(good, event_id="TEST-003", source_url=db[0]["source_url"])
+    bad = dict(good, decision="Reject", event_id="TEST-004", analyst_note="Mislabelled company")
+    waiting = dict(good, decision="", event_id="TEST-005", source_url="https://example.com/other")
+    q_fields = ["decision", "analyst_note"] + db_fields
+    with (tmp_path / "review_queue.csv").open("w", encoding="utf-8", newline="") as f:
+        w = csv.DictWriter(f, fieldnames=q_fields, extrasaction="ignore")
+        w.writeheader()
+        w.writerows([good, same_article, reused, bad, waiting])
+    monkeypatch.setattr(ar, "DB", tmp_path / "ci_events.csv")
+    monkeypatch.setattr(ar, "REVIEW", tmp_path / "review_queue.csv")
+    monkeypatch.setattr(ar, "RETIRED", tmp_path / "retired_ids.csv")
+    monkeypatch.setattr(ar, "RUN_LOG", tmp_path / "run_log.md")
+    ar.main()
+    _, new_db = ar.read(tmp_path / "ci_events.csv")
+    _, queue = ar.read(tmp_path / "review_queue.csv")
+    assert len(new_db) == len(db) + 1 and new_db[-1]["event_id"] == "TEST-001"
+    assert new_db[-1]["validation_status"] == "Verified"
+    assert {r["event_id"] for r in queue} == {"TEST-002", "TEST-003", "TEST-005"}
+    assert all(r["analyst_note"].startswith("Not applied") for r in queue if r["event_id"] != "TEST-005")
+    assert "TEST-004" in (tmp_path / "retired_ids.csv").read_text(encoding="utf-8")
