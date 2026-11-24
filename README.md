@@ -39,7 +39,7 @@ Full write-up: [`outputs/key_findings.md`](outputs/key_findings.md) · Battle ca
 
 ```mermaid
 flowchart LR
-    A[Collect<br/>GDELT news API, Google News<br/>or press-release URLs] --> B[Extract<br/>LLM to fixed JSON schema<br/>+ evidence quote]
+    A[Collect<br/>GDELT news API, then Bing News,<br/>then Google News, or press-release URLs] --> B[Extract<br/>LLM to fixed JSON schema<br/>+ evidence quote]
     B --> C{Validate<br/>rule checks}
     C -->|pass or soft fail| E[Human review queue]
     C -->|hard fail| F[Rejected log]
@@ -112,7 +112,7 @@ ai-ci-tracker/
 ├── prompts/extract_event.md   # the extraction prompt (versioned like code)
 ├── src/ci_tracker/
 │   ├── config.py              # competitors, taxonomy, source rules
-│   ├── collect.py             # GDELT / Google News + article text
+│   ├── collect.py             # GDELT / Bing News / Google News + article text
 │   ├── llm.py                 # Gemini / Claude / OpenAI adapters (plain REST)
 │   ├── extract.py             # article → structured events
 │   ├── validate.py            # guard-rails + de-duplication
