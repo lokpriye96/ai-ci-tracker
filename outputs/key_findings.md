@@ -20,8 +20,8 @@ _As of 22 Nov 2026._
 
 ### 4. Buying a client's captive centre (GCC) has become a way to win deals
 
-- **Evidence:** Wipro–Mindsprint plus a $1B+ Olam contract [WIP-004]. HCLTech bought Guardian's India GCC for $10.5M with a 7-year deal [HCL-008]. TCS is taking over Best Buy's India GCC [TCS-008]. Infosys is building Truist's GCC [INF-009].
-- **So what:** 3 of 8 firms used GCC transfers in 2026 (Wipro, HCLTech, TCS); Infosys is building a GCC for Truist. Clients' GCC leaders now face providers offering to absorb their centres. This is a key watch area for GCC-focused intelligence teams.
+- **Evidence:** HCLTech bought Guardian's India GCC for $10.5M with a 7-year deal [HCL-008]. TCS is taking over Best Buy's India GCC [TCS-008]. Infosys is building Truist's GCC [INF-009].
+- **So what:** 2 of 8 firms took over a client GCC in 2026 (HCLTech, TCS); Infosys is building one for Truist. Clients' GCC leaders now face providers offering to absorb their centres. This is a key watch area for GCC-focused intelligence teams.
 
 ### 5. Firms are racing to disclose AI revenue, but the numbers can't be compared directly
 

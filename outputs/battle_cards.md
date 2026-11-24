@@ -47,7 +47,7 @@ _As of 22 Nov 2026. 'How to compete' is written for a hypothetical mid-tier chal
 | **Flagship AI assets** | Wipro Intelligence (WINGS, WEGA, NetOxygen, CROAMIS); LIFT framework; 1,500 forward-deployed engineers on Gemini |
 | **Key moves** | HARMAN DTS ($375M, closed Dec-25); AI-Native Platforms Unit (Apr); Mindsprint with $1B+ Olam deal (Apr); Alpha Net contracts (Apr); ServiceNow (May); Aggne stake to 80% and METRO cloud exit (Jun); Google Cloud and LIFT (Aug); FlarreAI stake (Oct); Labelbox (Nov) |
 | **Tracked event IDs** | WIP-001, WIP-002, WIP-003, WIP-004, WIP-005, WIP-006, WIP-007, WIP-008, WIP-009, WIP-011, WIP-013 |
-| **Strengths** | Creative deal structures (captive plus contract); IP separated from services; engineering depth from DTS |
+| **Strengths** | Creative deal structures (acquisition plus contract); IP separated from services; engineering depth from DTS |
 | **Gaps / watch-outs** | No frontier-lab alliance tracked; AI bets are small stakes (FlarreAI for $2,000) rather than scale deals |
 | **How to compete** | Probe for model-neutral depth beyond Google. Lead with multi-model options and production references in the client's industry |
 

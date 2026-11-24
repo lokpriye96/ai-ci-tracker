@@ -39,10 +39,10 @@ KEY_FINDINGS = [
     },
     {
         "title": "Buying a client's captive centre (GCC) has become a way to win deals",
-        "evidence": "Wipro–Mindsprint plus a $1B+ Olam contract [WIP-004]. HCLTech bought Guardian's India GCC "
+        "evidence": "HCLTech bought Guardian's India GCC "
                     "for $10.5M with a 7-year deal [HCL-008]. TCS is taking over Best Buy's India GCC "
                     "[TCS-008]. Infosys is building Truist's GCC [INF-009].",
-        "so_what": "3 of 8 firms used GCC transfers in 2026 (Wipro, HCLTech, TCS); Infosys is building a GCC for Truist. Clients' GCC leaders now face providers offering "
+        "so_what": "2 of 8 firms took over a client GCC in 2026 (HCLTech, TCS); Infosys is building one for Truist. Clients' GCC leaders now face providers offering "
                    "to absorb their centres. This is a key watch area for GCC-focused intelligence teams.",
     },
     {
@@ -103,7 +103,7 @@ BATTLE_CARDS = {
         "positioning": "Consulting-led, AI-powered firm with a separate AI-native platforms business",
         "ai_assets": "Wipro Intelligence (WINGS, WEGA, NetOxygen, CROAMIS); LIFT framework; 1,500 forward-deployed engineers on Gemini",
         "key_moves": "HARMAN DTS ($375M, closed Dec-25); AI-Native Platforms Unit (Apr); Mindsprint with $1B+ Olam deal (Apr); Alpha Net contracts (Apr); ServiceNow (May); Aggne stake to 80% and METRO cloud exit (Jun); Google Cloud and LIFT (Aug); FlarreAI stake (Oct); Labelbox (Nov)",
-        "strengths": "Creative deal structures (captive plus contract); IP separated from services; engineering depth from DTS",
+        "strengths": "Creative deal structures (acquisition plus contract); IP separated from services; engineering depth from DTS",
         "gaps": "No frontier-lab alliance tracked; AI bets are small stakes (FlarreAI for $2,000) rather than scale deals",
         "how_to_win": "Probe for model-neutral depth beyond Google. Lead with multi-model options and production references in the client's industry",
     },

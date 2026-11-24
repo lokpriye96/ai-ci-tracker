@@ -27,7 +27,7 @@ In 2026 every IT services firm says it is "AI-first". A CI or strategy team need
 | 1 | **Access to frontier models is table stakes.** 5 of 8 firms announced OpenAI tie-ups; TCS has the widest model bench. | The edge has moved from *access* to *certified delivery capacity*. |
 | 2 | **Talent is the product.** Cognizant has committed 25k people to OpenAI and 18k to Gemini; Wipro has 1,500 forward-deployed engineers; Capgemini runs "Outcome Deployed Engineer" pods. | Expect AI sold as named pods priced on outcomes. |
 | 3 | **Two M&A playbooks.** Global majors buy scale (Capgemini–WNS $3.3B); Indian majors buy vertical tuck-ins. | WNS alone is worth more than every disclosed Indian acquisition in the tracker combined. |
-| 4 | **Captive takeovers win deals.** Wipro, HCLTech and TCS used GCC transfers in 2026; Infosys is building a GCC for Truist. | GCC leaders now face offers to absorb their centres. |
+| 4 | **Captive takeovers win deals.** HCLTech and TCS took over client GCCs in 2026; Infosys is building one for Truist. | GCC leaders now face offers to absorb their centres. |
 | 5 | **AI revenue disclosures can't be compared directly.** TCS reports $3.1B annualised (>10%); HCLTech $876M annualised; Infosys 10.5% of quarterly revenue (Q2 FY27). | Normalise the definitions before benchmarking. |
 | 6 | **Sovereign / India AI** is a new axis (HCLTech–Sarvam, TCS HyperVault, TechM–BharatGPT). | Regulated and public-sector buyers will weigh data location. |
 
