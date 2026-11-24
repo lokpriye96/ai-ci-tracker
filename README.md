@@ -4,7 +4,7 @@
 An end-to-end competitive intelligence (CI) workflow. It uses an LLM to pull **launches, partnerships, acquisitions and AI disclosures** from public news, checks every event against its source, and turns the result into a **competitor database, battle cards and an interactive dashboard**.
 
 **Competitors tracked (8):** Accenture · TCS · Infosys · Wipro · HCLTech · Cognizant · Capgemini · Tech Mahindra
-**Window:** Jun 2025 – Nov 2026 · **Events:** 80 verified against their source, 15 awaiting analyst approval (updated 24 Nov 2026) · **Every event links to its source**
+**Window:** Jun 2025 – Nov 2026 · **Events:** 80 verified against their source, 25 awaiting analyst approval (updated 24 Nov 2026) · **Every event links to its source**
 
 🔗 **Live dashboard:** https://lokpriye96.github.io/ai-ci-tracker/
 

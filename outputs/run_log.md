@@ -116,3 +116,36 @@ Every automated or manual run is recorded here.
 ## Analyst review 2026-11-23
 - approved 1, rejected 0, could not apply 0, still waiting 15
   - [Approved] CTS-014 Cognizant: Cognizant opens AI training centre in Chennai
+
+## Run 2026-11-24 17:28 UTC
+- Trigger: GitHub Actions · run 45445469340
+- LLM: gemini / gemini-3.5-flash-lite · look-back 14 days
+- Articles sent to LLM: 28 · LLM errors: 1
+- Candidate events: 18 → verified 9, needs review 1, rejected 1, duplicates skipped 7
+  - Collected: Accenture: 10 event-like via Bing News, 4 kept, 1 with article text
+  - Collected: TCS: 10 event-like via Bing News, 4 kept, 4 with article text
+  - Collected: Infosys: 12 event-like via Bing News, 4 kept, 4 with article text
+  - Collected: Wipro: 11 event-like via Bing News, 4 kept, 3 with article text
+  - Collected: HCLTech: 11 event-like via Bing News, 4 kept, 4 with article text
+  - Collected: Cognizant: 1 event-like via GDELT, 1 kept, 1 with article text
+  - Collected: Capgemini: 9 event-like via Bing News, 4 kept, 4 with article text
+  - Collected: Tech Mahindra: 5 event-like via Bing News, 3 kept, 1 with article text
+  - LLM error sample: Gemini (gemini-3.5-flash-lite) HTTP 503: {
+  "error": {
+    "code": 503,
+    "message": "This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.",
+    "status": "UNAVAILABLE"
+  }
+}
+
+  - [Verified] ACN-011 Accenture: Accenture reports nearly $74.2 billion in revenue (https://www.fool.com/coverage/better-buy/2026/11/24/accenture-vs-palo-alto-networks-which-tech-stock-is-a-better-buy-for-2027/)
+  - [Verified] TCS-016 TCS: TCS publishes global Enterprise AI Study on workplace productivity (https://www.manilatimes.net/2026/11/22/business/sunday-business-it/tcs-ai-use-grows-human-control-stays/2475426)
+  - [Verified] INF-012 Infosys: Infosys reports $5.2 billion in large deal wins (https://www.financialexpress.com/business/industry-infosys-q2-results-from-29-jump-in-ai-revenue-to-lower-fy27-guidance-5-key-takeaways-4368075/)
+  - [Verified] INF-013 Infosys: Infosys and Crocs sign 10-year IT agreement (https://www.financialexpress.com/business/industry-infosys-q2-results-from-29-jump-in-ai-revenue-to-lower-fy27-guidance-5-key-takeaways-4368075/)
+  - [Verified] WIP-017 Wipro: Capco recognized by OpenAI for AI innovation (https://finance.yahoo.com/technology/ai/articles/wipro-builds-ai-momentum-capco-002816032.html)
+  - [Verified] HCL-017 HCLTech: HCLTech Reports Q2 FY27 Results with 78% AI Revenue Growth (https://www.dqindia.com/news/hcltechs-ai-revenue-jumps-78-but-ai-led-deflation-is-just-starting-12670107)
+  - [Verified] HCL-018 HCLTech: HCLTech Secures USD 1.14 Billion Contract with Mercedes-Benz (https://www.dqindia.com/news/hcltechs-ai-revenue-jumps-78-but-ai-led-deflation-is-just-starting-12670107)
+  - [Verified] HCL-019 HCLTech: HCLTech Secures Multiple AI Projects Across Industries (https://www.financialexpress.com/business/industry-hcltech-q2-results-narrows-fy27-guidance-floor-ai-revenue-soars-785-key-takeaways-4359447/)
+  - [Verified] CTS-015 Cognizant: Cognizant and Pearson Release June 2026 AI Study (https://www.businesstoday.in/technology/news/story/freshers-are-not-disappearing-their-jobs-are-changing-cognizant-india-chief-on-ai-hiring-567581-2026-11-16)
+  - [Needs review] TEM-012 Tech Mahindra: Tech Mahindra launches business development team for Indus LLM (https://www.newsbytesapp.com/news/science/tech-mahindra-launches-business-development-team-to-monetise-indus-llm/tldr)
+  - [Rejected] Accenture: CyberArk partners with Accenture for AI agent security - event before tracking window; article text unavailable (headline only)
