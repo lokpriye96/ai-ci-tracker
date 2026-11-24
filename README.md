@@ -4,7 +4,7 @@
 An end-to-end competitive intelligence (CI) workflow. It uses an LLM to pull **launches, partnerships, acquisitions and AI disclosures** from public news, checks every event against its source, and turns the result into a **competitor database, battle cards and an interactive dashboard**.
 
 **Competitors tracked (8):** Accenture · TCS · Infosys · Wipro · HCLTech · Cognizant · Capgemini · Tech Mahindra
-**Window:** Jun 2025 – Nov 2026 · **Events:** 80 verified against their source, 15 awaiting analyst approval (updated 23 Nov 2026) · **Every event links to its source**
+**Window:** Jun 2025 – Nov 2026 · **Events:** 80 verified against their source, 15 awaiting analyst approval (updated 24 Nov 2026) · **Every event links to its source**
 
 🔗 **Live dashboard:** https://lokpriye96.github.io/ai-ci-tracker/
 
@@ -20,15 +20,15 @@ In 2026 every IT services firm says it is "AI-first". A CI or strategy team need
 2. **Who is allied with which model labs and platforms** (OpenAI, Anthropic, Google, Microsoft…)?
 3. **What does it mean** for positioning, deal pursuit and the next 90 days?
 
-## Key findings (as of 11 Nov 2026)
+## Key findings (as of 22 Nov 2026)
 
 | # | Finding | So what |
 |---|---|---|
 | 1 | **Access to frontier models is table stakes.** 5 of 8 firms announced OpenAI tie-ups; TCS has the widest model bench. | The edge has moved from *access* to *certified delivery capacity*. |
 | 2 | **Talent is the product.** Cognizant has committed 25k people to OpenAI and 18k to Gemini; Wipro has 1,500 forward-deployed engineers; Capgemini runs "Outcome Deployed Engineer" pods. | Expect AI sold as named pods priced on outcomes. |
 | 3 | **Two M&A playbooks.** Global majors buy scale (Capgemini–WNS $3.3B); Indian majors buy vertical tuck-ins. | WNS alone is worth more than every disclosed Indian acquisition in the tracker combined. |
-| 4 | **Captive takeovers win deals.** Wipro, HCLTech, TCS and Infosys all used GCC transfers in 2026. | GCC leaders now face offers to absorb their centres. |
-| 5 | **AI revenue disclosures can't be compared directly.** TCS reports $3.1B annualised (>10%); HCLTech $620M; Infosys 5.5% of quarterly revenue. | Normalise the definitions before benchmarking. |
+| 4 | **Captive takeovers win deals.** Wipro, HCLTech and TCS used GCC transfers in 2026; Infosys is building a GCC for Truist. | GCC leaders now face offers to absorb their centres. |
+| 5 | **AI revenue disclosures can't be compared directly.** TCS reports $3.1B annualised (>10%); HCLTech $876M annualised; Infosys 10.5% of quarterly revenue (Q2 FY27). | Normalise the definitions before benchmarking. |
 | 6 | **Sovereign / India AI** is a new axis (HCLTech–Sarvam, TCS HyperVault, TechM–BharatGPT). | Regulated and public-sector buyers will weigh data location. |
 
 Full write-up: [`outputs/key_findings.md`](outputs/key_findings.md) · Battle cards: [`outputs/battle_cards.md`](outputs/battle_cards.md)
@@ -67,7 +67,7 @@ The test suite feeds in a deliberately **hallucinated acquisition**. The validat
 | File | What it is |
 |---|---|
 | [`data/ci_events.csv`](data/ci_events.csv) | Structured competitor database (18 fields, source URL on every row) |
-| [`outputs/CI_Tracker.xlsx`](outputs/CI_Tracker.xlsx) | Excel workbook: Events table, Company × Type matrix, Partner Map, Theme heat map, Key Findings, Battle Cards, Data Dictionary. All summary numbers are **live formulas**, so new rows update the analysis. |
+| [`outputs/CI_Tracker.xlsx`](outputs/CI_Tracker.xlsx) | Excel workbook: Events table, Company × Type matrix, Partner Map, Theme heat map, Key Findings, Battle Cards, Data Dictionary. The summary tables (Overview, Company × Type, Partner Map, Themes) are **live formulas**, so new rows update them. |
 | [`docs/index.html`](docs/index.html) | Interactive dashboard (filters, hover details, timeline, battle cards, evidence table) |
 | [`outputs/battle_cards.md`](outputs/battle_cards.md) | One card per competitor: positioning, AI assets, strengths, gaps, how to compete |
 
@@ -128,6 +128,7 @@ ai-ci-tracker/
 
 - **Sources:** public news and company press releases only. 44% of events come from primary sources (newsroom, wire service, filing); the rest from business and trade media.
 - **Human in the loop:** the LLM collects and structures the data; an analyst verifies sources and writes all findings. Nothing the pipeline finds is published until an analyst approves it. The 22 Nov 2026 review removed 5 duplicate or mislabelled events, merged 2 split announcements, corrected dates and sources, and added 7 events: 2 the pipeline had wrongly rejected, 3 cleared from the review queue and 2 it had missed (see `data/retired_ids.csv` and `outputs/run_log.md`).
+- **"Verified" has two meanings.** In the run log, `[Verified]` means the automated checks passed (the evidence quote was found in the article). In the database, `Verified` means an analyst approved the event after opening its source; only approved events enter `data/ci_events.csv`.
 - **Coverage, not completeness:** the tracker shows what was announced and captured in the window. It is not a complete list of every partnership a firm has.
 - **Not like-for-like financials:** AI-revenue figures use each company's own definition.
 - See [`docs/methodology.md`](docs/methodology.md) for the taxonomy and the review protocol.

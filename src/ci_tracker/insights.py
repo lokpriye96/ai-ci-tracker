@@ -42,7 +42,7 @@ KEY_FINDINGS = [
         "evidence": "Wipro–Mindsprint plus a $1B+ Olam contract [WIP-004]. HCLTech bought Guardian's India GCC "
                     "for $10.5M with a 7-year deal [HCL-008]. TCS is taking over Best Buy's India GCC "
                     "[TCS-008]. Infosys is building Truist's GCC [INF-009].",
-        "so_what": "4 of 8 firms used GCC transfers in 2026. Clients' GCC leaders now face providers offering "
+        "so_what": "3 of 8 firms used GCC transfers in 2026 (Wipro, HCLTech, TCS); Infosys is building a GCC for Truist. Clients' GCC leaders now face providers offering "
                    "to absorb their centres. This is a key watch area for GCC-focused intelligence teams.",
     },
     {
@@ -80,15 +80,15 @@ BATTLE_CARDS = {
         "ai_assets": "Accenture Anthropic Business Group; OpenAI flagship programme; Faculty Frontier; ~110k AI & data staff",
         "key_moves": "Anthropic and OpenAI alliances (Dec-25); Faculty acquisition, whose CEO became CTO (Jan-26); 17 deals worth $4.9B in FY26; Sagacity and Avicado (Oct-26); Qantas outsourcing deal (Nov-26)",
         "strengths": "Largest M&A firepower; C-suite access; allied with both leading model labs; pre-built industry assets (telecom, construction, customer)",
-        "gaps": "FY27 growth guidance of only 3-6% in local currency; premium pricing; many acquisitions to integrate at once",
+        "gaps": "Premium pricing; 17 acquisitions in FY26 to integrate at once",
         "how_to_win": "Compete where price and outcome certainty matter (run-heavy deals, mid-market). Offer fixed-outcome pilots and faster time-to-value than a large Accenture programme",
     },
     "TCS": {
         "positioning": "Aims to be 'the world's largest AI-led technology services company'",
-        "ai_assets": "HyperVault AI infrastructure (100MW with OpenAI); Claude business unit; ADD AgentHub; Gemini Enterprise across its portfolio",
+        "ai_assets": "HyperVault AI infrastructure (100MW with OpenAI); Claude business unit; Gemini Enterprise across its portfolio",
         "key_moves": "ListEngage $72.8M (Oct-25) and Coastal Cloud (Dec-25, largest TCS deal); AMD (Jan); OpenAI and HyperVault (Feb); ServiceNow (Feb); Google Cloud (Apr); Mistral Forge (May); Anthropic Global Premier Partner (Jun); Best Buy GCC (Q2 FY27)",
         "strengths": "Broadest bench of model partners; AI revenue of $3.1B, more than 10% of the total; huge delivery scale; strong BFSI franchise",
-        "gaps": "Headline growth is slow (~2.8% YoY in constant currency in Q2 FY27); India revenue dipped; so many partners risks diluting focus",
+        "gaps": "Headline growth is slow (~2.8% YoY in constant currency in Q2 FY27); so many partners risks diluting focus",
         "how_to_win": "Present breadth as complexity. Lead with one deep, certified platform partnership and a named team the client can meet",
     },
     "Infosys": {

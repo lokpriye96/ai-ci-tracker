@@ -83,7 +83,7 @@ def build_excel(rows: list[dict]) -> Path:
     ov["A2"] = (f"The GenAI race in IT services: 8 competitors, Jun 2025 – Nov 2026 | "
                 f"Data updated {UPDATED} | Findings as of {AS_OF} | Public sources only")
     ov["A2"].font = SUB
-    ov["A4"], ov["A4"].font = "Headline metrics (live formulas on the Events sheet)", BOLD
+    ov["A4"], ov["A4"].font = "Headline metrics (live formulas calculated from the Events sheet)", BOLD
     kpis = [
         ("Events tracked", f"=COUNTA({rng('event_id')})"),
         ("Verified events", f'=COUNTIF({rng("validation_status")},"Verified")'),
@@ -267,13 +267,15 @@ def build_excel(rows: list[dict]) -> Path:
                 "Strengths and gaps are analyst judgements from the tracked public events.")
     bc["A2"].font = SUB
     fields = [("positioning", "Positioning (own words)"), ("ai_assets", "Flagship AI assets"),
-              ("key_moves", "Key moves"), ("strengths", "Strengths"), ("gaps", "Gaps / watch-outs"),
-              ("how_to_win", "How to compete")]
-    header(bc, 4, ["Competitor"] + [f[1] for f in fields], [14, 30, 34, 40, 34, 34, 36])
+              ("key_moves", "Key moves"), ("event_ids", "Tracked event IDs"), ("strengths", "Strengths"),
+              ("gaps", "Gaps / watch-outs"), ("how_to_win", "How to compete")]
+    header(bc, 4, ["Competitor"] + [f[1] for f in fields], [14, 30, 34, 40, 30, 34, 34, 36])
+    ids = _event_ids_by_company()
     for i, (co, card) in enumerate(BATTLE_CARDS.items(), start=5):
         bc.cell(row=i, column=1, value=co).font = BOLD
         for j, (key, _) in enumerate(fields, start=2):
-            c = bc.cell(row=i, column=j, value=card[key])
+            value = ids[co] if key == "event_ids" else card[key]
+            c = bc.cell(row=i, column=j, value=value)
             c.font, c.alignment = BODY, WRAP
         bc.cell(row=i, column=1).alignment = WRAP
         bc.row_dimensions[i].height = 120
@@ -294,7 +296,7 @@ def build_excel(rows: list[dict]) -> Path:
         "strategic_theme": "Fixed taxonomy used for the heat map (see Themes sheet).",
         "deal_value_usd_m": "USD millions only when disclosed in USD; other currencies in value_note.",
         "source_tier": "Primary = company newsroom, wire service or exchange filing; Secondary = business/trade media.",
-        "validation_status": "Verified = passed all checks and source opened by analyst; Needs review = open question.",
+        "validation_status": "Verified = analyst approved the event after checking its source (only approved events enter this file); Needs review = open question.",
         "confidence": "High / Medium / Low: clarity and specificity of the source.",
         "Validation rules": ("Reject: untracked company, invalid/future date, no or blocked source. Review: evidence quote "
                              "not found in article text, USD value without USD in text, low confidence, headline-only."),
@@ -310,19 +312,30 @@ def build_excel(rows: list[dict]) -> Path:
     return out
 
 
+def _event_ids_by_company() -> dict[str, str]:
+    """Every event ID in data/ci_events.csv, grouped by company, so each battle card traces to the database."""
+    out: dict[str, list[str]] = {}
+    with (ROOT / "data/ci_events.csv").open(encoding="utf-8") as f:
+        for r in csv.DictReader(f):
+            out.setdefault(r["company"], []).append(r["event_id"])
+    return {co: ", ".join(sorted(ids)) for co, ids in out.items()}
+
+
 def build_markdown() -> None:
     md = [f"# Competitor battle cards: GenAI in IT services\n",
           f"_As of {AS_OF}. 'How to compete' is written for a hypothetical mid-tier challenger. "
           f"Strengths and gaps are analyst judgements based on the tracked public events "
           f"([data](../data/ci_events.csv))._\n"]
     labels = [("positioning", "Positioning"), ("ai_assets", "Flagship AI assets"),
-              ("key_moves", "Key moves"), ("strengths", "Strengths"),
+              ("key_moves", "Key moves"), ("event_ids", "Tracked event IDs"), ("strengths", "Strengths"),
               ("gaps", "Gaps / watch-outs"), ("how_to_win", "How to compete")]
+    ids = _event_ids_by_company()
     for co, card in BATTLE_CARDS.items():
         md.append(f"\n## {co}\n")
         md.append("| | |\n|---|---|")
         for k, lab in labels:
-            md.append(f"| **{lab}** | {card[k]} |")
+            value = ids[co] if k == "event_ids" else card[k]
+            md.append(f"| **{lab}** | {value} |")
     (ROOT / "outputs/battle_cards.md").write_text("\n".join(md) + "\n", encoding="utf-8")
 
     kf = [f"# Key findings: the GenAI race in IT services\n", f"_As of {AS_OF}._\n"]
