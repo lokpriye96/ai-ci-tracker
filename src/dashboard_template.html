@@ -96,6 +96,7 @@
     <label>Competitor <select id="fCompany"><option value="">All</option></select></label>
     <label>Event type <select id="fType"><option value="">All</option></select></label>
     <label>Search <input type="search" id="fSearch" placeholder="e.g. Anthropic, GCC, insurance"></label>
+    <span style="font-size:12px;color:var(--text-muted)">Filters update the figures, charts, timeline, evidence table and battle card.</span>
   </div>
 
   <div class="grid2">
@@ -120,26 +121,26 @@
   </section>
 
   <section class="card">
-    <h2>Key findings</h2>
-    <p class="sub">Analyst view. Event IDs in brackets link back to the evidence table below.</p>
-    <div id="findings"></div>
-    <h3 style="font-size:13px;margin:14px 0 6px">90-day watch list</h3>
-    <ul id="watch" style="margin:0;padding-left:18px;color:var(--text-secondary)"></ul>
+    <h2>Evidence table <span class="sub" id="rowcount"></span></h2>
+    <p class="sub">The structured database behind every chart above. Follows the filters; each row links to its source.</p>
+    <div class="tablewrap"><table id="tbl">
+      <thead><tr><th>ID</th><th>Date</th><th>Company</th><th>Type</th><th>Event</th><th>Partner / target</th><th>$M</th><th>Source</th><th>Status</th></tr></thead>
+      <tbody></tbody></table></div>
   </section>
 
   <section class="card">
     <h2>Battle cards</h2>
-    <p class="sub">'How to compete' is written for a hypothetical mid-tier IT services challenger.</p>
+    <p class="sub">Follows the Competitor filter. 'How to compete' is written for a hypothetical mid-tier IT services challenger.</p>
     <div class="tabs" id="bcTabs" role="tablist"></div>
     <dl class="bc" id="bcBody"></dl>
   </section>
 
   <section class="card">
-    <h2>Evidence table <span class="sub" id="rowcount"></span></h2>
-    <p class="sub">The structured database behind every chart. 'Needs review' = held for human verification.</p>
-    <div class="tablewrap"><table id="tbl">
-      <thead><tr><th>ID</th><th>Date</th><th>Company</th><th>Type</th><th>Event</th><th>Partner / target</th><th>$M</th><th>Source</th><th>Status</th></tr></thead>
-      <tbody></tbody></table></div>
+    <h2>Key findings <span class="sub">· across all 8 competitors</span></h2>
+    <p class="sub">Analyst synthesis of the whole database, so it does not change with the filters. Event IDs in brackets jump to the evidence table above.</p>
+    <div id="findings"></div>
+    <h3 style="font-size:13px;margin:14px 0 6px">90-day watch list</h3>
+    <ul id="watch" style="margin:0;padding-left:18px;color:var(--text-secondary)"></ul>
   </section>
 
   <footer>Method: news collection → LLM extraction to a fixed schema → rule-based validation (evidence-quote check,
@@ -307,10 +308,21 @@ function cards() {
   Object.keys(D.cards).forEach(c => { const b = document.createElement('button'); b.textContent = c;
     b.setAttribute('role', 'tab'); b.onclick = () => show(c); tabs.appendChild(b); });
   show(Object.keys(D.cards)[0]);
+  window.showCard = show;
 }
 
-function render() { const r = filtered(); kpis(r); bars(r); heat(r); timeline(r); table(r); }
+function render() { const r = filtered(); kpis(r); bars(r); heat(r); timeline(r); table(r);
+  if (fC.value && D.cards[fC.value] && window.showCard) window.showCard(fC.value); }
 legend('legendBars', false); legend('legendTime', true); findings(); cards();
+// an event ID in the findings jumps to its row, clearing filters that would hide it
+document.addEventListener('click', ev => {
+  const a = ev.target.closest('a[href^="#row-"]'); if (!a) return;
+  const row = () => document.getElementById(a.getAttribute('href').slice(1));
+  if (!row()) { fC.value = ''; fT.value = ''; fS.value = ''; render(); }
+  const r = row(); if (!r) return; ev.preventDefault();
+  r.scrollIntoView({behavior: 'smooth', block: 'center'});
+  r.style.background = 'var(--warn-bg)'; setTimeout(() => { r.style.background = ''; }, 1800);
+});
 [fC, fT].forEach(s => s.addEventListener('change', render)); fS.addEventListener('input', render);
 addEventListener('resize', () => { clearTimeout(window._rt); window._rt = setTimeout(render, 120); });
 matchMedia('(prefers-color-scheme: dark)').addEventListener('change', render);
